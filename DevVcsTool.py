@@ -104,8 +104,13 @@ class DevVcsTool:
 
         return rv
 
+    # del remote branch
+    def del_remote_branch(self, branch):
+        cmd = 'git push %s :%s' % (self.rep, branch)
+        return self.do_cmd_except(cmd)
+
     # merge branch
-    def merge_branch(self, base_br, merge_br_list):
+    def merge_branch(self, base_br, merge_br_list, is_forth_push = False):
         #self.fetch()
         self.del_local_branch('tmp/*')
 
@@ -120,7 +125,7 @@ class DevVcsTool:
 
         info = self.do_cmd_except(cmd)
         if info == 'Already up-to-date.':
-            return info
+            return {'merge': info, }
 
         
         cmd = 'git merge --abort'
@@ -129,14 +134,35 @@ class DevVcsTool:
         for b in merge_br_list:
             cmd = '%s %s/%s' % (cmd, self.rep, b)
 
-        return self.do_cmd_except(cmd)
+        merge_info = self.do_cmd_except(cmd)
+
+        forth_push_argu = ''
+        if is_forth_push:
+            forth_push_argu = ' -f'
+        cmd = 'git push%s %s HEAD:%s' % (forth_push_argu, self.rep, base_br)
+
+        push_info = self.do_cmd_except(cmd)
+        return {'merge': merge_info, 'push': push_info}
+
+
+def tst_del_remote_br():
+    try:
+        dvt = DevVcsTool('origin')
+        res = dvt.del_remote_branch('devtool/test')
+        print res
+
+    except ShellCmdError as e:
+        print e
+
 
 
 def tst2():
     try:
         dvt = DevVcsTool('origin')
         res = dvt.merge_branch('devtool/test', ['master', 'dev/congming_test'])
-        print res
+        for r in res:
+            print r
+            print res[r]
 
     except ShellCmdError as e:
         print e
@@ -164,4 +190,5 @@ def tst():
 
 if __name__ == "__main__":
     #tst()
-    tst2()
+    #tst2()
+    tst_del_remote_br()
