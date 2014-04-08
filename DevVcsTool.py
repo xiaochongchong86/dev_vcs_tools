@@ -164,9 +164,10 @@ def collect_stat(dev_stat, base_stat, res_cmp):
     for e in res_cmp:
         base_stat[e] = []
         for b in res_cmp[e]:
+            if b not in dev_stat: dev_stat[b] = []
+
             if len(res_cmp[e][b]) == 0:
                 base_stat[e].append(b)
-                if b not in dev_stat: dev_stat[b] = []
                 dev_stat[b].append(e)
 
 
@@ -214,6 +215,7 @@ def all_merge_stat():
     ###############
     nomerge_dev_stat = collect_nomerge_stat(res_nomerge_dev)
     nomerge_dep_stat = collect_nomerge_stat(res_nomerge_dep)
+    #print dev_stat
 
     #print nomerge_dev_stat
     #print nomerge_dep_stat
