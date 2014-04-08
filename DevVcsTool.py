@@ -14,6 +14,9 @@ class ShellCmdError(Exception):
     def __str__(self):
         return 'Do shell:[%s] code:%d err:\n%s' % (self.cmd, self.code, self.err)
 
+    def info(self):
+        return {'cmd': self.cmd, 'code': self.code, 'err': self.err }
+
 
 
 class DevVcsTool:
@@ -84,8 +87,8 @@ class DevVcsTool:
     # tools, must call self.fetch
 
     # check the merge state of pref branch and some other pref branch
-    def cmp_pref_branch_pref_branch(self, pref0, pref1):
-        #self.fetch()
+    def cmp_pref_branch_pref_branch(self, pref0, pref1, need_fetch):
+        if need_fetch: self.fetch()
 
         base_brs = self.remote_branch_list(pref0)
         cmp_brs = self.remote_branch_list(pref1)
@@ -145,6 +148,85 @@ class DevVcsTool:
         return {'merge': merge_info, 'push': push_info}
 
 
+# =======================================
+def merge_stat(base_br, cmp_br, need_fetch):
+    try:
+        dvt = DevVcsTool('origin')
+        return dvt.cmp_pref_branch_pref_branch(base_br, cmp_br, need_fetch)
+
+
+    except ShellCmdError as e:
+        return e.info()
+        #traceback.print_exc()
+
+
+def collect_stat(dev_stat, base_stat, res_cmp):
+    for e in res_cmp:
+        base_stat[e] = []
+        for b in res_cmp[e]:
+            if len(res_cmp[e][b]) == 0:
+                base_stat[e].append(b)
+                if b not in dev_stat: dev_stat[b] = []
+                dev_stat[b].append(e)
+
+
+def collect_nomerge_stat(res_cmp):
+    base_stat = {}
+    for e in res_cmp:
+        base_stat[e] = {}
+        for b in res_cmp[e]:
+            if len(res_cmp[e][b]) > 0:
+                base_stat[e][b] = res_cmp[e][b]
+
+    return base_stat
+
+
+def all_merge_stat():
+    # 检查当前状态所有的dev分支所处的发布状态
+    # 以及，qa/* develop 已经合并的dev分支
+    res_qa = merge_stat('qa/*', 'dev/*', False)
+    res_develop = merge_stat('develop', 'dev/*', False)
+    res_deploy = merge_stat('deploy', 'dev/*', False)
+    res_master = merge_stat('master', 'dev/*', False)
+
+    # 检查develop的功能有多少没有进入deploy
+    res_nomerge_dev = merge_stat('deploy', 'develop', False)
+
+    # 检查deploy的功能有多少没有进入master
+    res_nomerge_dep = merge_stat('master', 'deploy', False)
+
+
+    dev_stat = {}
+    cmp_qa = {}
+    cmp_dev = {}
+
+    collect_stat(dev_stat, cmp_qa, res_qa)
+    collect_stat(dev_stat, cmp_dev, res_develop)
+
+    cmp_tmp = {}
+    collect_stat(dev_stat, cmp_tmp, res_deploy)
+    cmp_tmp = {}
+    collect_stat(dev_stat, cmp_tmp, res_master)
+
+    #print cmp_dev
+    #print dev_stat
+
+    ###############
+    nomerge_dev_stat = collect_nomerge_stat(res_nomerge_dev)
+    nomerge_dep_stat = collect_nomerge_stat(res_nomerge_dep)
+
+    #print nomerge_dev_stat
+    #print nomerge_dep_stat
+    return  {'dev_stat': dev_stat,
+             'cmp_qa': cmp_qa,
+             'cmp_dev': cmp_dev,
+             'nomerge_dev_stat': nomerge_dev_stat,
+             'nomerge_dep_stat': nomerge_dep_stat,
+             }
+
+
+
+# =======================================
 def tst_del_remote_br():
     try:
         dvt = DevVcsTool('origin')
@@ -169,6 +251,15 @@ def tst2():
 
 
 
+def tst_fetch():
+    try:
+        dvt = DevVcsTool('origind')
+        res = dvt.fetch()
+        return res
+
+    except ShellCmdError as e:
+        return e
+
 
 def tst():
     try:
@@ -191,4 +282,6 @@ def tst():
 if __name__ == "__main__":
     #tst()
     #tst2()
-    tst_del_remote_br()
+    #tst_del_remote_br()
+    all_merge_stat()
+
