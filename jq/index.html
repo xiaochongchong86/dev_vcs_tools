@@ -3,7 +3,8 @@
 <head>
 
 <meta http-equiv="content-type" content="text/html; charset=utf-8" />
-<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.8.0/jquery.min.js"></script>
+
+<script src="jquery-1.11.0.min.js"></script>
 <script type="text/javascript" src="ope.js"></script>
 
 <script>$(document).ready(readydo)</script>
@@ -15,19 +16,36 @@
 <div id="div1">loading......</div>
 
 
-<h3>创建开发分支</h3>
-<form>
-<input id="text1" type="text" name="branch">
-<button id="btn1" type="button">create</button>
-</form>
+<h3>创建开发(dev/*)分支基于develop创建</h3>
+<p>dev/<input id="input_dv" type="text" name="branch"></p>
+<button id="btn_dv" type="button">create</button>
+<div id="div_res_dv"></div>
 
 
-<h3>创建测试分支</h3>
-<h3>创建hotfix分支</h3>
+<h3>创建测试(qa/*)分支基于develop创建</h3>
+<p>qa/<input id="input_qa" type="text" name="branch"></p>
+<button id="btn_qa" type="button">create</button>
+<div id="div_res_qa"></div>
+
+<h3>创建紧急修正(hotfix/*)基于master创建</h3>
+<p>hotfix/<input id="input_hf" type="text" name="branch"></p>
+<button id="btn_hf" type="button">create</button>
+<div id="div_res_hf"></div>
+
 
 <h3>集成开发分支到合并到测试分支</h3>
+<p>base branch: qa/<input id="input_merge_qa" type="text" name="branch"></p>
+<p>merge list(分支用逗号分隔): <input id="input_merge_list_qa" type="text" name="branch"></p>
+<button id="btn_merge_qa" type="button">merge</button>
+<div id="div_res_merge_qa"></div>
+
 
 <h3>集成开发分支到develop分支</h3>
+<p>base branch: <input id="input_merge_dv" value="develop" type="text" name="branch" readonly="readonly"></p>
+<p>merge list(分支用逗号分隔): <input id="input_merge_list_dv" type="text" name="branch"></p>
+<button id="btn_merge_dv" type="button">merge</button>
+<div id="div_res_merge_dv"></div>
+
 
 <h3>创建release分支</h3>
 

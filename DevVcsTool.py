@@ -82,6 +82,22 @@ class DevVcsTool:
             cmd = 'git branch -D %s' % (b, )
             self.do_cmd_except(cmd)
 
+    def create_remote_branch(self, base, branch):
+        cmd = 'git push %s %s:%s' % (self.rep, base, branch)
+        return self.do_cmd_except(cmd)
+
+    def checkout_remote_branch(self, base_br):
+        #if need_fetch: self.fetch()
+        self.del_local_branch('tmp/*')
+        br_id = uuid.uuid1()
+        cmd = 'git checkout -b tmp/%s/%s %s/%s' % (br_id, base_br, self.rep, base_br)
+        return  self.do_cmd_except(cmd)
+
+
+    # del remote branch
+    def del_remote_branch(self, branch):
+        cmd = 'git push %s :%s' % (self.rep, branch)
+        return self.do_cmd_except(cmd)
 
 
     # tools, must call self.fetch
@@ -107,28 +123,27 @@ class DevVcsTool:
 
         return rv
 
-    # del remote branch
-    def del_remote_branch(self, branch):
-        cmd = 'git push %s :%s' % (self.rep, branch)
-        return self.do_cmd_except(cmd)
+
+
+    def create_solid_branch(self, base, branch, need_fetch):
+        if need_fetch: self.fetch()
+        self.checkout_remote_branch(base)
+        return self.create_remote_branch('HEAD', branch)
+
 
     # merge branch
-    def merge_branch(self, base_br, merge_br_list, is_forth_push = False):
-        #self.fetch()
-        self.del_local_branch('tmp/*')
+    def merge_branch(self, base_br, merge_br_list, need_fetch, is_forth_push = False):
+        if need_fetch: self.fetch()
 
-        br_id = uuid.uuid1()
-        #print br_id
-        cmd = 'git checkout -b tmp/%s/%s %s/%s' % (br_id, base_br, self.rep, base_br)
-        #print cmd
-        self.do_cmd_except(cmd)
+        self.checkout_remote_branch(base_br)
+
         cmd = 'git merge --no-commit --no-ff'
         for b in merge_br_list:
             cmd = '%s %s/%s' % (cmd, self.rep, b)
 
         info = self.do_cmd_except(cmd)
         if info == 'Already up-to-date.':
-            return {'merge': info, }
+            return {'merge': info, 'push': 'not need push'}
 
         
         cmd = 'git merge --abort'
@@ -149,15 +164,30 @@ class DevVcsTool:
 
 
 # =======================================
-def merge_stat(base_br, cmp_br, need_fetch):
+
+def except_wrapper(fun, *args, **kwds):
     try:
-        dvt = DevVcsTool('origin')
-        return dvt.cmp_pref_branch_pref_branch(base_br, cmp_br, need_fetch)
-
-
+        res = fun(*args, **kwds)
+        return {'code': 0, 'res': res}
     except ShellCmdError as e:
         return e.info()
-        #traceback.print_exc()
+
+
+def merge_branch(base_br, merge_br_list):
+    dvt = DevVcsTool('origin')
+    return dvt.merge_branch(base_br, merge_br_list, False)
+
+
+def create_solid_branch(base, branch):
+    dvt = DevVcsTool('origin')
+    return dvt.create_solid_branch(base, branch, False)
+
+
+
+def merge_stat(base_br, cmp_br, need_fetch):
+    dvt = DevVcsTool('origin')
+    return dvt.cmp_pref_branch_pref_branch(base_br, cmp_br, need_fetch)
+
 
 
 def collect_stat(dev_stat, base_stat, res_cmp):
@@ -227,7 +257,6 @@ def all_merge_stat():
              }
 
 
-
 # =======================================
 def tst_del_remote_br():
     try:
@@ -243,7 +272,7 @@ def tst_del_remote_br():
 def tst2():
     try:
         dvt = DevVcsTool('origin')
-        res = dvt.merge_branch('devtool/test', ['master', 'dev/congming_test'])
+        res = dvt.merge_branch('devtool/test2', ['master', 'dev/congming_test'], False)
         for r in res:
             print r
             print res[r]
@@ -283,7 +312,8 @@ def tst():
 
 if __name__ == "__main__":
     #tst()
-    #tst2()
+    #print tst2()
     #tst_del_remote_br()
-    all_merge_stat()
+    #print all_merge_stat_execpt()
+    print create_solid_branch_execpt('develop', 'dev/ttt')
 

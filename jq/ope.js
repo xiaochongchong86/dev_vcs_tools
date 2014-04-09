@@ -1,6 +1,6 @@
 function readydo()
 {
-	init_show()
+	//init_show()
 
 	button_click()
 
@@ -8,11 +8,103 @@ function readydo()
 
 function button_click()
 {
-	$("#btn1").click(
-		function(){
-		alert("Text: " + $("#text1").val());
-	});
+	$("#btn_dv").click(create_br_closure('dv'))
+	$("#btn_qa").click(create_br_closure('qa'))
+	$("#btn_hf").click(create_br_closure('hf'))
 
+	$("#btn_merge_qa").click(merge_br_closure('qa'))
+	$("#btn_merge_dv").click(merge_br_closure('dv'));
+
+}
+
+function merge_br_closure(tp)
+{
+	var input = "#input_merge_" + tp
+	var merge_list = "#input_merge_list_" + tp
+	var div = '#div_res_merge_' + tp
+
+
+	return function()
+		{
+			var base = $(input).val()
+			var mlist = $(merge_list).val()
+
+			uri = "/git/merge/" + tp
+			$.post(uri, {base_br: base, merge_list: mlist}, merge_br_cb_closure(div))
+
+		}
+
+}
+
+function merge_br_cb_closure(user_data)
+{
+	return function(data, status)
+		{
+
+			var obj = eval('(' + data + ')')
+			var htm = ''
+			if (obj.code != 0) {
+				htm = err_show(obj)
+			} else {
+				merge_info = obj.res.merge
+				push_info = obj.res.push
+				htm = '<pre>'
+				htm += '[merge_info]\n' + merge_info
+				htm += '\n[push_info]\n' + push_info
+				htm += '</pre>'
+			}
+
+
+			$(user_data).html(htm)
+
+		}
+}
+
+
+function create_br_closure(tp)
+{
+	var input = "#input_" + tp
+	var div = '#div_res_' + tp
+
+	return function()
+		{
+			br = $(input).val()
+			uri = "/git/branch/" + tp + "/" + br
+			$.post(uri, {}, create_br_cb_closure(div))
+
+		}
+}
+
+
+function err_show(obj)
+{
+
+	var htm = ''
+	htm = '<pre>'
+	htm += 'code:' + obj.code + '\n'
+	htm += 'cmd:' + obj.cmd + '\n'
+	htm += 'err:' + obj.err + '\n'
+	htm += '</pre>'
+	return htm
+
+}
+
+function create_br_cb_closure(user_data)
+{
+	return function(data, status)
+		{
+			var obj = eval('(' + data + ')')
+			var htm = ''
+			if (obj.code != 0) {
+				htm = err_show(obj)
+			} else {
+				htm = '<pre>' + obj.res + '</pre>'
+			}
+
+
+			$(user_data).html(htm)
+
+		}
 }
 
 function init_show()
@@ -34,6 +126,16 @@ function merge_stat_all(response, status, xhr)
 
 	var obj = eval('(' + response + ')')
 	var htm = ''
+	if (obj.code != 0) {
+		htm = err_show(obj)
+		$('#div1').html(htm)
+
+		return
+	}
+
+	obj = obj.res
+
+
 
     var dev_stat = obj.dev_stat
     var cmp_qa = obj.cmp_qa
@@ -107,8 +209,13 @@ function merge_stat_all(response, status, xhr)
 		var cb = dev_stat[e]
 		htm += '<h4>' + e + '</h4>'
 		htm += '<pre>'
+		var ismerge = false
 		for (var i = 0; i < cb.length; i++) {
 			htm += '[' + cb[i] + ']'
+			ismerge = true
+		}
+		if (!ismerge) {
+			htm += '没有合并'
 		}
 		htm += '</pre>'
 	}

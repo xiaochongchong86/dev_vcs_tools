@@ -9,11 +9,9 @@ import DevVcsTool
 
 urls = (
     '/git', 'test',
-    '/git/stat/merge/qa', 'QaMergeStat',
-    '/git/stat/merge/dev', 'DevMergeStat',
-    '/git/stat/merge/deploy', 'DeployMergeStat',
-    '/git/stat/merge/master', 'MasterMergeStat',
     '/git/stat/merge', 'MergeStat',
+    '/git/branch/(.*)/(.*)', 'Branch',
+    '/git/merge/(.*)', 'MergeBranch',
 )
 
 app = web.application(urls, globals())
@@ -21,29 +19,51 @@ app = web.application(urls, globals())
 
 class MergeStat:
     def GET(self):
-        res = DevVcsTool.all_merge_stat()
+        res = DevVcsTool.except_wrapper(DevVcsTool.all_merge_stat)
         return json.dumps(res)
 
 
-class QaMergeStat:
-    def GET(self):
-        res = DevVcsTool.merge_stat('qa/*', 'dev/*')
+class Branch:
+    def POST(self, tp, br):
+        if tp == 'dv':
+            res = DevVcsTool.except_wrapper(DevVcsTool.create_solid_branch, 'develop', 'dev/'+br)
+
+        elif tp == 'qa':
+            res = DevVcsTool.except_wrapper(DevVcsTool.create_solid_branch, 'develop', 'qa/'+br)
+
+        elif tp == 'hf':
+            res = DevVcsTool.except_wrapper(DevVcsTool.create_solid_branch, 'master', 'hotfix/'+br)
+
+        else:
+            res = {'code': 1, 'err': 'err type: '+tp}
+
         return json.dumps(res)
 
-class DevMergeStat:
-    def GET(self):
-        res = DevVcsTool.merge_stat('develop', 'dev/*')
-        return json.dumps(res)
 
-class DeployMergeStat:
-    def GET(self):
-        res = DevVcsTool.merge_stat('deploy/*', 'develop')
-        return json.dumps(res)
+class MergeBranch:
+    def POST(self, tp):
 
+        usr_data = dict(web.input())
+        base_br = usr_data['base_br']
+        merge_list = usr_data['merge_list']
 
-class MasterMergeStat:
-    def GET(self):
-        res = DevVcsTool.merge_stat('master', 'deploy/*')
+        #print base_br, merge_list
+
+        merge_list = merge_list.split(',')
+        merge_list = [e.strip() for e in merge_list]
+
+        if tp == 'dv':
+            res = DevVcsTool.except_wrapper(DevVcsTool.merge_branch, 'develop', merge_list)
+
+        elif tp == 'qa':
+            res = DevVcsTool.except_wrapper(DevVcsTool.merge_branch, 'qa/'+base_br, merge_list)
+
+        elif tp == 'hf':
+            res = DevVcsTool.except_wrapper(DevVcsTool.merge_branch, 'hotfix/'+base_br, merge_list)
+
+        else:
+            res = {'code': 1, 'err': 'err type: '+tp}
+
         return json.dumps(res)
 
 
