@@ -33,8 +33,10 @@ function merge_br_closure(tp)
 	var div = '#div_res_merge_' + tp
 
 
+
 	return function()
 		{
+			$(div).html('<pre>loading...</pre>')
 			var base = $(input).val()
 			var mlist = $(merge_list).val()
 
@@ -75,8 +77,10 @@ function create_br_closure(tp)
 	var input = "#input_" + tp
 	var div = '#div_res_' + tp
 
+
 	return function()
 		{
+			$(div).html('<pre>loading...</pre>')
 			br = $(input).val()
 			uri = "/git/branch/" + tp + "/" + br
 			$.post(uri, {}, create_br_cb_closure(div))

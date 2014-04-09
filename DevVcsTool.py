@@ -43,6 +43,12 @@ class DevVcsTool:
         #print res[1]
         return res[1]
 
+    # 清理当前
+    def clear_local(self):
+        cmd = 'git reset --hard'
+        self.do_cmd_except(cmd)
+        cmd = 'git clean -xdf'
+        self.do_cmd_except(cmd)
 
     # do fetch, sync local repo
     def fetch(self):
@@ -130,6 +136,7 @@ class DevVcsTool:
 
 
     def create_solid_branch(self, base, branch, need_fetch, is_forth_push = False):
+        self.clear_local()
         if need_fetch: self.fetch()
         self.checkout_remote_branch(base)
         return self.create_remote_branch('HEAD', branch, is_forth_push)
@@ -137,6 +144,7 @@ class DevVcsTool:
 
     # merge branch
     def merge_branch(self, base_br, merge_br_list, need_fetch, is_forth_push = False):
+        self.clear_local()
         if need_fetch: self.fetch()
 
         self.checkout_remote_branch(base_br)
@@ -285,6 +293,15 @@ def tst2():
         print e
 
 
+def tst_clear_local():
+    try:
+        dvt = DevVcsTool('origind')
+        res = dvt.clear_local()
+        return res
+
+    except ShellCmdError as e:
+        return e
+
 
 def tst_fetch():
     try:
@@ -319,5 +336,7 @@ if __name__ == "__main__":
     #print tst2()
     #tst_del_remote_br()
     #print all_merge_stat_execpt()
-    print except_wrapper(create_solid_branch, 'develop', 'dev/ttt', True)
+    #print except_wrapper(create_solid_branch, 'develop', 'dev/ttt', True)
+    print tst_clear_local()
+
 
