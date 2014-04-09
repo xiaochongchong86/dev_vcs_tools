@@ -69,6 +69,11 @@ class MergeBranch:
         elif tp == 'hf':
             res = DevVcsTool.except_wrapper(DevVcsTool.merge_branch, 'hotfix/'+base_br, merge_list)
 
+        elif tp == 'ms':
+            merge_br = 'release/version-'+usr_data['merge_list']
+            res = DevVcsTool.except_wrapper(DevVcsTool.merge_branch, 'master', [merge_br, ])
+
+
         else:
             res = {'code': 1, 'err': 'err type: '+tp}
 

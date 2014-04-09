@@ -22,6 +22,7 @@ function button_click()
 
 	$("#btn_merge_qa").click(merge_br_closure('qa'))
 	$("#btn_merge_dv").click(merge_br_closure('dv'));
+	$("#btn_merge_ms").click(merge_br_closure('ms'));
 
 }
 
