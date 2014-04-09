@@ -7,13 +7,11 @@
 <script src="jquery-1.11.0.min.js"></script>
 <script type="text/javascript" src="ope.js"></script>
 
-<script>$(document).ready(readydo)</script>
+<script>$(document).ready(readydo_ope)</script>
 
 </head>
 
 <body>
-
-<div id="div1">loading......</div>
 
 
 <h3>创建开发(dev/*)分支基于develop创建</h3>
@@ -33,6 +31,19 @@
 <div id="div_res_hf"></div>
 
 
+<h3>创建release分支(release/*)基于develop创建</h3>
+<p>release/version-<input id="input_rl" type="text" name="branch"></p>
+<button id="btn_rl" type="button">create</button>
+<div id="div_res_rl"></div>
+
+
+<h3>修改预发布(deploy)分支指向基于release/version-*创建</h3>
+<p>deploy-->release/version-<input id="input_dp" type="text" name="branch"></p>
+<button id="btn_dp" type="button">change</button>
+<div id="div_res_dp"></div>
+
+
+
 <h3>集成开发分支到合并到测试分支</h3>
 <p>base branch: qa/<input id="input_merge_qa" type="text" name="branch"></p>
 <p>merge list(分支用逗号分隔): <input id="input_merge_list_qa" type="text" name="branch"></p>
@@ -45,11 +56,6 @@
 <p>merge list(分支用逗号分隔): <input id="input_merge_list_dv" type="text" name="branch"></p>
 <button id="btn_merge_dv" type="button">merge</button>
 <div id="div_res_merge_dv"></div>
-
-
-<h3>创建release分支</h3>
-
-<h3>上线release</h3>
 
 
 

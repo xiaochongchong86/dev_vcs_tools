@@ -1,4 +1,10 @@
-function readydo()
+function readydo_info()
+{
+	init_show()
+}
+
+
+function readydo_ope()
 {
 	//init_show()
 
@@ -11,6 +17,8 @@ function button_click()
 	$("#btn_dv").click(create_br_closure('dv'))
 	$("#btn_qa").click(create_br_closure('qa'))
 	$("#btn_hf").click(create_br_closure('hf'))
+	$("#btn_rl").click(create_br_closure('rl'))
+	$("#btn_dp").click(create_br_closure('dp'))
 
 	$("#btn_merge_qa").click(merge_br_closure('qa'))
 	$("#btn_merge_dv").click(merge_br_closure('dv'));

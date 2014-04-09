@@ -34,6 +34,14 @@ class Branch:
         elif tp == 'hf':
             res = DevVcsTool.except_wrapper(DevVcsTool.create_solid_branch, 'master', 'hotfix/'+br)
 
+        elif tp == 'rl':
+            res = DevVcsTool.except_wrapper(DevVcsTool.create_solid_branch, 'develop', 'release/version-'+br)
+
+
+        elif tp == 'dp':
+            res = DevVcsTool.except_wrapper(DevVcsTool.create_solid_branch, 'release/version-'+br, 'deploy', True)
+
+
         else:
             res = {'code': 1, 'err': 'err type: '+tp}
 
