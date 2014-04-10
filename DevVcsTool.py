@@ -142,12 +142,31 @@ class DevVcsTool:
         return self.create_remote_branch('HEAD', branch, is_forth_push)
 
 
+    def check_need_merge(self, merge_br_list):
+        cmd = 'git branch --remote --list %s/* --merged' % (self.rep, )
+        ml = self.do_cmd_except(cmd)
+        ml = self.parse_remote_branch_list(ml)
+        ml = {}.fromkeys(ml, 1)
+
+        res = []
+        for b in merge_br_list:
+            if b not in ml:
+                res.append(b)
+
+        return res
+
+
     # merge branch
     def merge_branch(self, base_br, merge_br_list, merge_info, need_fetch, is_forth_push = False):
         self.clear_local()
         if need_fetch: self.fetch()
 
         self.checkout_remote_branch(base_br)
+
+        merge_br_list = self.check_need_merge(merge_br_list)
+        if len(merge_br_list) == 0:
+            return {'merge': 'not need merge', 'push': 'not need push'}
+
 
         cmd = 'git merge --no-commit --no-ff'
         for b in merge_br_list:
@@ -172,6 +191,7 @@ class DevVcsTool:
             cmd = '%s %s/%s' % (cmd, self.rep, b)
 
         cmd = "%s -m '%s'" % (cmd, merge_log)
+
 
         merge_res = self.do_cmd_except(cmd)
 
@@ -290,6 +310,18 @@ def tst_del_remote_br():
 
 
 
+def tst_check_need_merge():
+    try:
+        dvt = DevVcsTool('origin')
+        res = dvt.check_need_merge(['master', 'develop', 'deploy', 'dev/feature/ordertrends', 'dev/congming_test'])
+        print res
+
+    except ShellCmdError as e:
+        print e
+
+
+
+
 def tst2():
     try:
         dvt = DevVcsTool('origin')
@@ -344,6 +376,7 @@ def tst():
 if __name__ == "__main__":
     #tst()
     print tst2()
+    #print tst_check_need_merge()
     #tst_del_remote_br()
     #print all_merge_stat_execpt()
     #print except_wrapper(create_solid_branch, 'develop', 'dev/ttt', True)

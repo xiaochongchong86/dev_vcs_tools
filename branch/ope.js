@@ -172,7 +172,7 @@ function merge_stat_all(response, status, xhr)
 
 	}
 
-
+	/*
 	htm += '<h3>没有合并入release的develop</h3>'
 	htm += '<hr/>'
 	for (var e in nomerge_dev_stat) {
@@ -186,7 +186,7 @@ function merge_stat_all(response, status, xhr)
 		htm += '</pre>'
 
 	}
-
+	*/
 
 
 
