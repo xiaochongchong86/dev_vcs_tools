@@ -25,6 +25,11 @@ class DevVcsTool:
 
     def __init__(self, rep = 'origin'):
         self.rep = rep
+        #self.is_fetch = False
+        self.fetch()
+        self.clear_local()
+        self.del_local_branch('tmp/*')
+        self.heads = self.all_remote_branch_head()
 
     def do_cmd(self, cmd):
         print cmd
@@ -57,6 +62,8 @@ class DevVcsTool:
 
         cmd = 'git remote prune %s' % (self.rep, )
         self.do_cmd_except(cmd)
+
+        #self.is_fetch = True
 
     # get remote branchs for the begin of 'pref'
     def remote_branch_list(self, pref):
@@ -97,8 +104,6 @@ class DevVcsTool:
         return self.do_cmd_except(cmd)
 
     def checkout_remote_branch(self, base_br):
-        #if need_fetch: self.fetch()
-        self.del_local_branch('tmp/*')
         br_id = uuid.uuid1()
         cmd = 'git checkout -b tmp/%s/%s %s/%s' % (br_id, base_br, self.rep, base_br)
         return  self.do_cmd_except(cmd)
@@ -112,8 +117,7 @@ class DevVcsTool:
 
     # tools, must call self.fetch
 
-    def all_remote_branch_head(self, need_fetch):
-        if need_fetch: self.fetch()
+    def all_remote_branch_head(self):
         all_brs = self.remote_branch_list('*')
         all_brs = self.parse_remote_branch_list(all_brs)
         cmd_format = 'git log %s/%s -1 --pretty=format:"%%h %%ar %%an %%s"'
@@ -128,8 +132,7 @@ class DevVcsTool:
 
 
     # check the merge state of pref branch and some other pref branch
-    def cmp_pref_branch_pref_branch(self, pref0, pref1, need_fetch):
-        if need_fetch: self.fetch()
+    def cmp_pref_branch_pref_branch(self, pref0, pref1):
 
         base_brs = self.remote_branch_list(pref0)
         cmp_brs = self.remote_branch_list(pref1)
@@ -150,9 +153,8 @@ class DevVcsTool:
 
 
 
-    def create_solid_branch(self, base, branch, need_fetch, is_forth_push = False):
+    def create_solid_branch(self, base, branch, is_forth_push = False):
         self.clear_local()
-        if need_fetch: self.fetch()
         self.checkout_remote_branch(base)
         return self.create_remote_branch('HEAD', branch, is_forth_push)
 
@@ -172,9 +174,8 @@ class DevVcsTool:
 
 
     # merge branch
-    def merge_branch(self, base_br, merge_br_list, merge_info, need_fetch, is_forth_push = False):
+    def merge_branch(self, base_br, merge_br_list, merge_info, is_forth_push = False):
         self.clear_local()
-        if need_fetch: self.fetch()
 
         self.checkout_remote_branch(base_br)
 
@@ -230,23 +231,17 @@ def except_wrapper(fun, *args, **kwds):
 
 def all_remote_branch_head():
     dvt = DevVcsTool('origin')
-    return dvt.all_remote_branch_head(True)
+    return dvt.all_remote_branch_head()
 
 
 def merge_branch(base_br, merge_br_list, merge_info):
     dvt = DevVcsTool('origin')
-    return dvt.merge_branch(base_br, merge_br_list, merge_info, True)
+    return dvt.merge_branch(base_br, merge_br_list, merge_info)
 
 
 def create_solid_branch(base, branch, is_forth_push = False):
     dvt = DevVcsTool('origin')
-    return dvt.create_solid_branch(base, branch, True, is_forth_push)
-
-
-
-def merge_stat(base_br, cmp_br, need_fetch):
-    dvt = DevVcsTool('origin')
-    return dvt.cmp_pref_branch_pref_branch(base_br, cmp_br, need_fetch)
+    return dvt.create_solid_branch(base, branch, is_forth_push)
 
 
 
@@ -275,16 +270,19 @@ def collect_nomerge_stat(res_cmp):
 def all_merge_stat():
     # 检查当前状态所有的dev分支所处的发布状态
     # 以及，qa/* develop 已经合并的dev分支
-    res_qa = merge_stat('qa/*', 'dev/*', True)
-    res_develop = merge_stat('develop', 'dev/*', False)
-    res_release = merge_stat('release/*', 'dev/*', False)
-    res_master = merge_stat('master', 'dev/*', False)
+
+    dvt = DevVcsTool('origin')
+
+    res_qa = dvt.cmp_pref_branch_pref_branch('qa/*', 'dev/*')
+    res_develop = dvt.cmp_pref_branch_pref_branch('develop', 'dev/*')
+    res_release = dvt.cmp_pref_branch_pref_branch('release/*', 'dev/*')
+    res_master = dvt.cmp_pref_branch_pref_branch('master', 'dev/*')
 
     # 检查develop的功能有多少没有进入release
-    res_nomerge_dev = merge_stat('release/*', 'develop', False)
+    res_nomerge_dev = dvt.cmp_pref_branch_pref_branch('release/*', 'develop')
 
     # 检查release的功能有多少没有进入master
-    res_nomerge_dep = merge_stat('master', 'release/*', False)
+    res_nomerge_dep = dvt.cmp_pref_branch_pref_branch('master', 'release/*')
 
 
     dev_stat = {}
@@ -331,7 +329,7 @@ def tst_del_remote_br():
 def tst_all_remote_branch_head():
     try:
         dvt = DevVcsTool('origin')
-        res = dvt.all_remote_branch_head(True)
+        res = dvt.all_remote_branch_head()
         print res
 
     except ShellCmdError as e:
@@ -354,7 +352,7 @@ def tst_check_need_merge():
 def tst2():
     try:
         dvt = DevVcsTool('origin')
-        res = dvt.merge_branch('devtool/test2', ['master', 'dev/congming_test'], "T]]\\TT\\TT$33&*QQQQQQ#)(*#T'\"TT", True)
+        res = dvt.merge_branch('devtool/test2', ['master', 'dev/congming_test'], "T]]\\TT\\TT$33&*QQQQQQ#)(*#T'\"TT")
         #res = dvt.merge_branch('devtool/test2', ['master', 'dev/congming_test'], "TTTTTTTTTTTT", True)
         for r in res:
             print r
