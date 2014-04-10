@@ -28,6 +28,7 @@ function button_click()
 
 function merge_br_closure(tp)
 {
+	var input_merge_info = "#input_merge_info_" + tp
 	var input = "#input_merge_" + tp
 	var merge_list = "#input_merge_list_" + tp
 	var div = '#div_res_merge_' + tp
@@ -41,7 +42,7 @@ function merge_br_closure(tp)
 			var mlist = $(merge_list).val()
 
 			uri = "/git/merge/" + tp
-			$.post(uri, {base_br: base, merge_list: mlist}, merge_br_cb_closure(div))
+			$.post(uri, {base_br: base, merge_list: mlist, merge_info: $(input_merge_info).val()}, merge_br_cb_closure(div))
 
 		}
 

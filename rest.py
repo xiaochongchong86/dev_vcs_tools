@@ -59,6 +59,7 @@ class MergeBranch:
         usr_data = dict(web.input())
         base_br = usr_data['base_br']
         merge_list = usr_data['merge_list']
+        merge_info = usr_data.get('merge_info', '')
 
         #print base_br, merge_list
 
@@ -66,17 +67,17 @@ class MergeBranch:
         merge_list = [e.strip() for e in merge_list]
 
         if tp == 'dv':
-            res = DevVcsTool.except_wrapper(DevVcsTool.merge_branch, 'develop', merge_list)
+            res = DevVcsTool.except_wrapper(DevVcsTool.merge_branch, 'develop', merge_list, merge_info)
 
         elif tp == 'qa':
-            res = DevVcsTool.except_wrapper(DevVcsTool.merge_branch, 'qa/'+base_br, merge_list)
+            res = DevVcsTool.except_wrapper(DevVcsTool.merge_branch, 'qa/'+base_br, merge_list, merge_info)
 
         elif tp == 'hf':
-            res = DevVcsTool.except_wrapper(DevVcsTool.merge_branch, 'hotfix/'+base_br, merge_list)
+            res = DevVcsTool.except_wrapper(DevVcsTool.merge_branch, 'hotfix/'+base_br, merge_list, merge_info)
 
         elif tp == 'ms':
             merge_br = 'release/version-'+usr_data['merge_list']
-            res = DevVcsTool.except_wrapper(DevVcsTool.merge_branch, 'master', [merge_br, ])
+            res = DevVcsTool.except_wrapper(DevVcsTool.merge_branch, 'master', [merge_br, ], merge_info)
 
 
         else:

@@ -143,7 +143,7 @@ class DevVcsTool:
 
 
     # merge branch
-    def merge_branch(self, base_br, merge_br_list, need_fetch, is_forth_push = False):
+    def merge_branch(self, base_br, merge_br_list, merge_info, need_fetch, is_forth_push = False):
         self.clear_local()
         if need_fetch: self.fetch()
 
@@ -160,11 +160,20 @@ class DevVcsTool:
         
         cmd = 'git merge --abort'
         self.do_cmd_except(cmd)
-        cmd = 'git merge --no-ff'
+
+        merge_log = '[merge] [base: %s] [list:' % (base_br, )
+        for ml in merge_br_list:
+            merge_log = '%s %s' % (merge_log, ml)
+        merge_log = '%s] %s' % (merge_log, merge_info)
+        merge_log = merge_log.replace('\\','\\\\').replace("'","''")
+
+        cmd = "git merge --no-ff"
         for b in merge_br_list:
             cmd = '%s %s/%s' % (cmd, self.rep, b)
 
-        merge_info = self.do_cmd_except(cmd)
+        cmd = "%s -m '%s'" % (cmd, merge_log)
+
+        merge_res = self.do_cmd_except(cmd)
 
         forth_push_argu = ''
         if is_forth_push:
@@ -172,7 +181,7 @@ class DevVcsTool:
         cmd = 'git push%s %s HEAD:%s' % (forth_push_argu, self.rep, base_br)
 
         push_info = self.do_cmd_except(cmd)
-        return {'merge': merge_info, 'push': push_info}
+        return {'merge': merge_res, 'push': push_info}
 
 
 # =======================================
@@ -185,9 +194,9 @@ def except_wrapper(fun, *args, **kwds):
         return e.info()
 
 
-def merge_branch(base_br, merge_br_list):
+def merge_branch(base_br, merge_br_list, merge_info):
     dvt = DevVcsTool('origin')
-    return dvt.merge_branch(base_br, merge_br_list, True)
+    return dvt.merge_branch(base_br, merge_br_list, merge_info, True)
 
 
 def create_solid_branch(base, branch, is_forth_push = False):
@@ -284,7 +293,8 @@ def tst_del_remote_br():
 def tst2():
     try:
         dvt = DevVcsTool('origin')
-        res = dvt.merge_branch('devtool/test2', ['master', 'dev/congming_test'], False)
+        res = dvt.merge_branch('devtool/test2', ['master', 'dev/congming_test'], "T]]\\TT\\TT$33&*QQQQQQ#)(*#T'\"TT", True)
+        #res = dvt.merge_branch('devtool/test2', ['master', 'dev/congming_test'], "TTTTTTTTTTTT", True)
         for r in res:
             print r
             print res[r]
@@ -333,10 +343,10 @@ def tst():
 
 if __name__ == "__main__":
     #tst()
-    #print tst2()
+    print tst2()
     #tst_del_remote_br()
     #print all_merge_stat_execpt()
     #print except_wrapper(create_solid_branch, 'develop', 'dev/ttt', True)
-    print tst_clear_local()
+    #print tst_clear_local()
 
 
