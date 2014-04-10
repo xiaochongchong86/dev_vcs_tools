@@ -25,8 +25,13 @@ class MergeStat:
 
 class Branch:
     def POST(self, tp, br):
+        #print tp, br
+        post_argu = dict(web.input())
+
         if tp == 'dv':
-            res = DevVcsTool.except_wrapper(DevVcsTool.create_solid_branch, 'develop', 'dev/'+br)
+            base = 'deploy'
+            if 'base' in post_argu: base = post_argu['base']
+            res = DevVcsTool.except_wrapper(DevVcsTool.create_solid_branch, base, 'dev/'+br)
 
         elif tp == 'qa':
             res = DevVcsTool.except_wrapper(DevVcsTool.create_solid_branch, 'develop', 'qa/'+br)

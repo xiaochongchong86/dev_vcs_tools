@@ -74,16 +74,17 @@ function merge_br_cb_closure(user_data)
 
 function create_br_closure(tp)
 {
+	var input_base = "#input_base_" + tp
 	var input = "#input_" + tp
 	var div = '#div_res_' + tp
 
-
 	return function()
 		{
+			ib = $(input_base).val()
 			$(div).html('<pre>loading...</pre>')
 			br = $(input).val()
 			uri = "/git/branch/" + tp + "/" + br
-			$.post(uri, {}, create_br_cb_closure(div))
+			$.post(uri, {base: ib}, create_br_cb_closure(div))
 
 		}
 }
@@ -156,7 +157,7 @@ function merge_stat_all(response, status, xhr)
     var nomerge_dev_stat = obj.nomerge_dev_stat
     var nomerge_dep_stat = obj.nomerge_dep_stat
 
-	htm += '<h3>没有合并入master的deploy</h3>'
+	htm += '<h3>没有合并入master的release</h3>'
 	htm += '<hr/>'
 	for (var e in nomerge_dep_stat) {
 		var cb = nomerge_dep_stat[e]
@@ -171,7 +172,7 @@ function merge_stat_all(response, status, xhr)
 	}
 
 
-	htm += '<h3>没有合并入deploy的develop</h3>'
+	htm += '<h3>没有合并入release的develop</h3>'
 	htm += '<hr/>'
 	for (var e in nomerge_dev_stat) {
 		var cb = nomerge_dev_stat[e]

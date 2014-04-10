@@ -187,12 +187,12 @@ def except_wrapper(fun, *args, **kwds):
 
 def merge_branch(base_br, merge_br_list):
     dvt = DevVcsTool('origin')
-    return dvt.merge_branch(base_br, merge_br_list, False)
+    return dvt.merge_branch(base_br, merge_br_list, True)
 
 
 def create_solid_branch(base, branch, is_forth_push = False):
     dvt = DevVcsTool('origin')
-    return dvt.create_solid_branch(base, branch, False, is_forth_push)
+    return dvt.create_solid_branch(base, branch, True, is_forth_push)
 
 
 
