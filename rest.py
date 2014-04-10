@@ -12,6 +12,7 @@ urls = (
     '/git/stat/merge', 'MergeStat',
     '/git/branch/(.*)/(.*)', 'Branch',
     '/git/merge/(.*)', 'MergeBranch',
+    '/git/branch/heads', 'BranchHeads',
 )
 
 app = web.application(urls, globals())

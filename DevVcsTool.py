@@ -112,6 +112,21 @@ class DevVcsTool:
 
     # tools, must call self.fetch
 
+    def all_remote_branch_head(self, need_fetch):
+        if need_fetch: self.fetch()
+        all_brs = self.remote_branch_list('*')
+        all_brs = self.parse_remote_branch_list(all_brs)
+        cmd_format = 'git log %s/%s -1 --pretty=format:"%%h %%ar %%an %%s"'
+
+        rv = {}
+        for b in all_brs:
+                cmd = cmd_format % (self.rep, b)
+                rv[b] = self.do_cmd_except(cmd)
+
+
+        return rv
+
+
     # check the merge state of pref branch and some other pref branch
     def cmp_pref_branch_pref_branch(self, pref0, pref1, need_fetch):
         if need_fetch: self.fetch()
@@ -213,6 +228,10 @@ def except_wrapper(fun, *args, **kwds):
     except ShellCmdError as e:
         return e.info()
 
+def all_remote_branch_head():
+    dvt = DevVcsTool('origin')
+    return dvt.all_remote_branch_head(True)
+
 
 def merge_branch(base_br, merge_br_list, merge_info):
     dvt = DevVcsTool('origin')
@@ -309,6 +328,16 @@ def tst_del_remote_br():
         print e
 
 
+def tst_all_remote_branch_head():
+    try:
+        dvt = DevVcsTool('origin')
+        res = dvt.all_remote_branch_head(True)
+        print res
+
+    except ShellCmdError as e:
+        print e
+
+
 
 def tst_check_need_merge():
     try:
@@ -375,7 +404,8 @@ def tst():
 
 if __name__ == "__main__":
     #tst()
-    print tst2()
+    #print tst2()
+    print tst_all_remote_branch_head()
     #print tst_check_need_merge()
     #tst_del_remote_br()
     #print all_merge_stat_execpt()
