@@ -176,8 +176,8 @@ function create_br_closure(tp)
 			ib = $(input_base).val()
 			$(div).html('<pre>loading...</pre>')
 			br = $(input).val()
-			uri = "/git/branch/" + tp + "/" + br
-			$.post(uri, {base: ib}, create_br_cb_closure(div))
+			uri = "/git/branch/" + tp
+			$.post(uri, {base_br: ib, new_br: br}, create_br_cb_closure(div))
 
 		}
 }

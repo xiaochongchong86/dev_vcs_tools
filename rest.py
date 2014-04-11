@@ -11,7 +11,7 @@ import DevVcsTool
 urls = (
     '/git', 'test',
     '/git/stat/merge', 'MergeStat',
-    '/git/branch/(.*)/(.*)', 'Branch',
+    '/git/branch/(.*)', 'Branch',
     '/git/merge/(.*)', 'MergeBranch',
     '/git/mergecheck/(.*)', 'MergeCheck',
     '/git/branch/heads', 'BranchHeads',
@@ -39,17 +39,20 @@ class MergeStat:
 
 
 class Branch:
-    def POST(self, tp, br):
-        return traceback_wrapper(self.do_POST, tp, br)
+    def POST(self, tp):
+        return traceback_wrapper(self.do_POST, tp)
 
-    def do_POST(self, tp, br):
+    def do_POST(self, tp):
         #print tp, br
-        post_argu = dict(web.input())
+        usr_data = dict(web.input())
+
+        usr_data = dict(web.input())
+        base_br = usr_data['base_br']
+        br = usr_data['new_br']
+
 
         if tp == 'dv':
-            base = 'deploy'
-            if 'base' in post_argu: base = post_argu['base']
-            res = DevVcsTool.except_wrapper(DevVcsTool.create_solid_branch, base, 'dev/'+br)
+            res = DevVcsTool.except_wrapper(DevVcsTool.create_solid_branch, base_br, 'dev/'+br)
 
         elif tp == 'qa':
             res = DevVcsTool.except_wrapper(DevVcsTool.create_solid_branch, 'develop', 'qa/'+br)
@@ -62,7 +65,7 @@ class Branch:
 
 
         elif tp == 'dp':
-            res = DevVcsTool.except_wrapper(DevVcsTool.create_solid_branch, 'release/version-'+br, 'deploy', True)
+            res = DevVcsTool.except_wrapper(DevVcsTool.create_solid_branch, 'release/version-'+br, 'develop', True)
 
 
         else:
