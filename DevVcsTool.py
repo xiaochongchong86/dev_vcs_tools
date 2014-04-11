@@ -32,6 +32,10 @@ class DevVcsTool:
         self.heads = self.all_remote_branch_head()
 
     def do_cmd(self, cmd):
+        #cmd = 'export LANG=en_US.utf8 && %s' % (cmd, )
+        if isinstance(cmd, unicode):
+            cmd = cmd.encode('utf-8')
+
         print cmd
         # commands.getstatusoutput(cmd)
         # Execute the string cmd in a shell with os.popen() and return a 2-tuple (status, output).
@@ -193,6 +197,7 @@ class DevVcsTool:
     # merge branch
     def merge_branch(self, base_br, merge_br_list, merge_info, merge_tag, is_forth_push = False):
         self.clear_local()
+        merge_tag = merge_tag.strip()
 
         self.checkout_remote_branch(base_br)
 
@@ -419,7 +424,7 @@ def tst_check_need_merge():
 def tst2():
     try:
         dvt = DevVcsTool('origin')
-        res = dvt.merge_branch('devtool/test2', ['master', 'dev/congming_test'], "T]]\\TT\\TT$33&*QQQQQQ#)(*#T'\"TT", '10.3.2')
+        res = dvt.merge_branch('devtool/test2', ['master', 'dev/congming_test'], "客户端版本升级配置修改T]]啦啦拉阿打发散的份额\\TT\\TT$33&*QQQQQQ#)(*#T'\"TT", '')
         #res = dvt.merge_branch('devtool/test2', ['master', 'dev/congming_test'], "TTTTTTTTTTTT", True)
         for r in res:
             print r
@@ -469,8 +474,8 @@ def tst():
 
 if __name__ == "__main__":
     #tst()
-    #print tst2()
-    print tst_check_merge_branch()
+    print tst2()
+    #print tst_check_merge_branch()
     #print tst_create_tag()
     #print tst_all_remote_branch_head()
     #print tst_check_need_merge()

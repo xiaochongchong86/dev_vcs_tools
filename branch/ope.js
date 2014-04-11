@@ -141,7 +141,7 @@ function merge_br_cb_closure(user_data)
 				htm = '<pre>'
 				htm += '[merge_info]\n' + merge_info
 				htm += '\n[push_info]\n' + push_info
-				if (tag === undefined)
+				if (!(tag === undefined))
 					htm += '\n[tag_info]\n' + tag
 				htm += '</pre>'
 			}
