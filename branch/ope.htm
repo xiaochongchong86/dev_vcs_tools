@@ -48,6 +48,7 @@
 <h3>集成开发分支到合并到测试分支</h3>
 <p>base branch: qa/<input id="input_merge_qa" type="text" name="branch"></p>
 <p>merge list(分支用逗号分隔): <input id="input_merge_list_qa" type="text" name="branch" size="60"></p>
+<button id="btn_check_qa" type="button">check</button>
 <button id="btn_merge_qa" type="button">merge</button>
 <div id="div_res_merge_qa"></div>
 
@@ -56,6 +57,7 @@
 <p>base branch: <input id="input_merge_dv" value="develop" type="text" name="branch" readonly="readonly"></p>
 <p>merge list(分支用逗号分隔): <input id="input_merge_list_dv" type="text" name="branch"  size="60"></p>
 <p>合并说明: <input id="input_merge_info_dv" type="text" name="branch"  size="60"></p>
+<button id="btn_check_dv" type="button">check</button>
 <button id="btn_merge_dv" type="button">merge</button>
 <div id="div_res_merge_dv"></div>
 
@@ -67,6 +69,17 @@
 <button id="btn_merge_ms" type="button">merge</button>
 <div id="div_res_merge_ms"></div>
 -->
+
+
+<h3>上线(master)合并develop分支</h3>
+<p>base branch: <input id="input_merge_ms2" value="master" type="text" name="branch" readonly="readonly"></p>
+<p>merge: <input id="input_merge_list_ms2" type="text" value="develop" readonly="readonly" name="branch"></p>
+<p>上线功能说明: <input id="input_merge_info_ms2" type="text" name="branch"  size="60"></p>
+<p>tag号(v*.*.*): v<input id="input_merge_tag_ms2" type="text" name="branch"></p>
+<button id="btn_check_ms2" type="button">check</button>
+<button id="btn_merge_ms2" type="button">merge</button>
+<div id="div_res_merge_ms2"></div>
+
 
 
 </body>

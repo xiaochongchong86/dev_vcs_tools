@@ -23,11 +23,84 @@ function button_click()
 	$("#btn_merge_qa").click(merge_br_closure('qa'))
 	$("#btn_merge_dv").click(merge_br_closure('dv'));
 	$("#btn_merge_ms").click(merge_br_closure('ms'));
+	$("#btn_merge_ms2").click(merge_br_closure('ms2'));
+
+
+
+	$("#btn_check_qa").click(check_merge_br_closure('qa'))
+	$("#btn_check_dv").click(check_merge_br_closure('dv'));
+	$("#btn_check_ms").click(check_merge_br_closure('ms'));
+	$("#btn_check_ms2").click(check_merge_br_closure('ms2'));
 
 }
 
+function check_merge_br_closure(tp)
+{
+	var input = "#input_merge_" + tp
+	var merge_list = "#input_merge_list_" + tp
+	var div = '#div_res_merge_' + tp
+
+
+
+	return function()
+		{
+			$(div).html('<pre>loading...</pre>')
+			var base = $(input).val()
+			var mlist = $(merge_list).val()
+
+			uri = "/git/mergecheck/" + tp
+			$.post(
+				   uri,
+	               {base_br: base, merge_list: mlist},
+				   check_merge_br_cb_closure(div)
+				   )
+
+		}
+
+}
+
+
+function check_merge_br_cb_closure(user_data)
+{
+	return function(data, status)
+		{
+
+			var obj = eval('(' + data + ')')
+			var htm = ''
+			if (obj.code != 0) {
+				htm = err_show(obj)
+			} else {
+				htm = '<pre>'
+				var check_stat = obj.res.stat
+				var heads = obj.res.heads
+				for (var e in check_stat) {
+					var cb = check_stat[e]
+					htm += base_br_show(e, heads)
+
+					for (var c in cb) {
+						htm += cmp_br_show(c, heads) + '\n'
+						if (cb[c].length == 0) {
+							htm += '没有未合并的内容\n'
+						} else {
+							htm += cb[c] + '\n'
+						}
+					}
+
+				}
+				htm += '</pre>'
+
+			}
+
+			$(user_data).html(htm)
+
+		}
+}
+
+
+
 function merge_br_closure(tp)
 {
+	var input_merge_tag = "#input_merge_tag_" + tp
 	var input_merge_info = "#input_merge_info_" + tp
 	var input = "#input_merge_" + tp
 	var merge_list = "#input_merge_list_" + tp
@@ -42,7 +115,11 @@ function merge_br_closure(tp)
 			var mlist = $(merge_list).val()
 
 			uri = "/git/merge/" + tp
-			$.post(uri, {base_br: base, merge_list: mlist, merge_info: $(input_merge_info).val()}, merge_br_cb_closure(div))
+			$.post(
+				   uri,
+	               {base_br: base, merge_list: mlist, merge_info: $(input_merge_info).val(), merge_tag: $(input_merge_tag).val()},
+				   merge_br_cb_closure(div)
+				   )
 
 		}
 
@@ -60,9 +137,12 @@ function merge_br_cb_closure(user_data)
 			} else {
 				merge_info = obj.res.merge
 				push_info = obj.res.push
+				tag = obj.res.tag
 				htm = '<pre>'
 				htm += '[merge_info]\n' + merge_info
 				htm += '\n[push_info]\n' + push_info
+				if (tag === undefined)
+					htm += '\n[tag_info]\n' + tag
 				htm += '</pre>'
 			}
 
@@ -134,6 +214,23 @@ function init_show()
 	$.get("/git/stat/merge", merge_stat_all)
 }
 
+function branch_show(br)
+{
+	br = '['+br+']'
+	return '<font color="blue">' + br + '</font>'
+}
+
+function base_br_show(br, heads)
+{
+	return '<h4>' + branch_show(br) + ' ' + heads[br] + '</h4>'
+}
+
+function cmp_br_show(br, heads)
+{
+	return branch_show(br) + ' ' + heads[br]
+}
+
+
 function merge_stat_all(response, status, xhr)
 {
 	//$('#div1').text(response)
@@ -157,12 +254,14 @@ function merge_stat_all(response, status, xhr)
     var cmp_dev = obj.cmp_dev
     var nomerge_dev_stat = obj.nomerge_dev_stat
     var nomerge_dep_stat = obj.nomerge_dep_stat
-
+	var nomerge_master_dev_stat = obj.nomerge_master_dev_stat
+	var heads = obj.heads
+		/*
 	htm += '<h3>没有合并入master的release</h3>'
 	htm += '<hr/>'
 	for (var e in nomerge_dep_stat) {
 		var cb = nomerge_dep_stat[e]
-		htm += '<h4>' + e + '</h4>'
+		htm += base_br_show(e, heads)
 		htm += '<pre>'
 		for (var c in cb) {
 			htm += '\n[' + c + ']\n'
@@ -172,12 +271,12 @@ function merge_stat_all(response, status, xhr)
 
 	}
 
-	/*
+
 	htm += '<h3>没有合并入release的develop</h3>'
 	htm += '<hr/>'
 	for (var e in nomerge_dev_stat) {
 		var cb = nomerge_dev_stat[e]
-		htm += '<h4>' + e + '</h4>'
+		htm += base_br_show(e, heads)
 		htm += '<pre>'
 		for (var c in cb) {
 			htm += '[' + c + ']\n'
@@ -186,7 +285,29 @@ function merge_stat_all(response, status, xhr)
 		htm += '</pre>'
 
 	}
-	*/
+		*/
+
+	htm += '<h3>没有合并入master的develop</h3>'
+	htm += '<hr/>'
+	for (var e in nomerge_master_dev_stat) {
+		var cb = nomerge_master_dev_stat[e]
+		htm += base_br_show(e, heads)
+
+		var isnomerge = false
+		htm += '<pre>'
+		for (var c in cb) {
+			//htm += '[' + c + ']\n'
+			htm += cmp_br_show(c, heads) + '\n'
+			htm += cb[c]
+			isnomerge = true
+		}
+		if (!isnomerge) {
+			htm += '没有未合并的内容'
+		}
+		htm += '</pre>'
+
+	}
+
 
 
 
@@ -194,10 +315,11 @@ function merge_stat_all(response, status, xhr)
 	htm += '<hr/>'
 	for (var e in cmp_qa) {
 		var cb = cmp_qa[e]
-		htm += '<h4>' + e + '</h4>'
+		htm += base_br_show(e, heads)
 		htm += '<pre>'
 		for (var i = 0; i < cb.length; i++) {
-			htm += '[' + cb[i] + ']\n'
+			htm += cmp_br_show(cb[i], heads) + '\n'
+			//htm += branch_show(cb[i]) + ' ' + heads[cb[i]] + '\n'
 		}
 		htm += '</pre>'
 	}
@@ -207,10 +329,11 @@ function merge_stat_all(response, status, xhr)
 	htm += '<hr/>'
 	for (var e in cmp_dev) {
 		var cb = cmp_dev[e]
-		htm += '<h4>' + e + '</h4>'
+		htm += base_br_show(e, heads)
 		htm += '<pre>'
 		for (var i = 0; i < cb.length; i++) {
-			htm += '[' + cb[i] + ']\n'
+			htm += cmp_br_show(cb[i], heads) + '\n'
+			//htm += branch_show(cb[i]) + ' ' + heads[cb[i]] + '\n'
 		}
 		htm += '</pre>'
 	}
@@ -222,15 +345,16 @@ function merge_stat_all(response, status, xhr)
 
 	for (var e in dev_stat) {
 		var cb = dev_stat[e]
-		htm += '<h4>' + e + '</h4>'
+		htm += base_br_show(e, heads)
 		htm += '<pre>'
 		var ismerge = false
 		for (var i = 0; i < cb.length; i++) {
-			htm += '[' + cb[i] + ']'
+			htm += cmp_br_show(cb[i], heads) + '\n'
+			//htm += branch_show(cb[i]) + ' ' + heads[cb[i]] + '\n'
 			ismerge = true
 		}
 		if (!ismerge) {
-			htm += '没有合并'
+			htm += '未合并'
 		}
 		htm += '</pre>'
 	}
