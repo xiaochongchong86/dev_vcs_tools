@@ -122,7 +122,26 @@ class DevVcsTool:
         return self.do_cmd_except(cmd)
 
 
-    # tools, must call self.fetch
+    def do_cmp_branch_list(self, base_brs, cmp_brs, merge_type):
+        rv = {}
+
+        merge_type_flag = ''
+        if merge_type == 'no_merges':
+            merge_type_flag = '--no-merges'
+        elif  merge_type == 'merges':
+            merge_type_flag = '--merges'
+
+        cmd_format = 'git log %s/%s..%s/%s ' + merge_type_flag + ' --pretty=format:"%%h %%ar %%an %%s"'
+        for b_b in base_brs:
+            rv[b_b] = {}
+            for c_b in cmp_brs:
+                cmd = cmd_format % (self.rep, b_b, self.rep, c_b)
+                rv[b_b][c_b] = self.do_cmd_except(cmd)
+
+        return rv
+
+
+    # tools
 
     def all_remote_branch_head(self):
         all_brs = self.remote_branch_list('*')
@@ -147,22 +166,7 @@ class DevVcsTool:
         base_brs = self.parse_remote_branch_list(base_brs)
         cmp_brs = self.parse_remote_branch_list(cmp_brs)
 
-        rv = {}
-
-        merge_type_flag = ''
-        if merge_type == 'no_merges':
-            merge_type_flag = '--no-merges'
-        elif  merge_type == 'merges':
-            merge_type_flag = '--merges'
-
-        cmd_format = 'git log %s/%s..%s/%s ' + merge_type_flag + ' --pretty=format:"%%h %%ar %%an %%s"'
-        for b_b in base_brs:
-            rv[b_b] = {}
-            for c_b in cmp_brs:
-                cmd = cmd_format % (self.rep, b_b, self.rep, c_b)
-                rv[b_b][c_b] = self.do_cmd_except(cmd)
-
-        return rv
+        return self.do_cmp_branch_list(base_brs, cmp_brs, merge_type)
 
     def esc_message(self, msg):
         return msg.replace('\\','\\\\').replace("'","''")
@@ -266,7 +270,16 @@ def all_remote_branch_head():
 
 def merge_branch(base_br, merge_br_list, merge_info, merge_tag):
     dvt = DevVcsTool('origin')
-    return dvt.merge_branch(base_br, merge_br_list, merge_info, merge_tag)
+    res = dvt.merge_branch(base_br, merge_br_list, merge_info, merge_tag)
+    return {base_br: res}
+
+def merge_hotfix_branch(merge_br_list, merge_info, merge_tag):
+    dvt = DevVcsTool('origin')
+
+    res0 = dvt.merge_branch('master', merge_br_list, merge_info, merge_tag)
+    res1 = dvt.merge_branch('develop', merge_br_list, merge_info, '')
+
+    return {'master': res0, 'develop': res1}
 
 
 def create_solid_branch(base, branch, is_forth_push = False):
@@ -300,6 +313,12 @@ def collect_nomerge_stat(res_cmp):
 def check_merge_branch(base_br, merge_list):
     dvt = DevVcsTool('origin')
 
+    base_br = base_br.split(',')
+    base_br = [e.strip() for e in base_br]
+
+
+    res = dvt.do_cmp_branch_list(base_br, merge_list, '')
+    '''
     res = {}
     for br in merge_list:
         tmp = dvt.cmp_pref_branch_pref_branch(base_br, br, '')
@@ -308,6 +327,7 @@ def check_merge_branch(base_br, merge_list):
             for ee in tmp[e]:
                 res[e].setdefault(ee, {})
                 res[e][ee] = tmp[e][ee]
+                '''
 
     return {'stat': res, 'heads': dvt.get_heads()}
 

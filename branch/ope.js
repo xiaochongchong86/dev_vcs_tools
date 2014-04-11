@@ -24,6 +24,7 @@ function button_click()
 	$("#btn_merge_dv").click(merge_br_closure('dv'));
 	$("#btn_merge_ms").click(merge_br_closure('ms'));
 	$("#btn_merge_ms2").click(merge_br_closure('ms2'));
+	$("#btn_merge_hf").click(merge_br_closure('hf'));
 
 
 
@@ -31,6 +32,7 @@ function button_click()
 	$("#btn_check_dv").click(check_merge_br_closure('dv'));
 	$("#btn_check_ms").click(check_merge_br_closure('ms'));
 	$("#btn_check_ms2").click(check_merge_br_closure('ms2'));
+	$("#btn_check_hf").click(check_merge_br_closure('hf'));
 
 }
 
@@ -135,15 +137,25 @@ function merge_br_cb_closure(user_data)
 			if (obj.code != 0) {
 				htm = err_show(obj)
 			} else {
-				merge_info = obj.res.merge
-				push_info = obj.res.push
-				tag = obj.res.tag
 				htm = '<pre>'
-				htm += '[merge_info]\n' + merge_info
-				htm += '\n[push_info]\n' + push_info
-				if (!(tag === undefined))
-					htm += '\n[tag_info]\n' + tag
+				obj = obj.res
+				for (var e in obj) {
+					res = obj[e]
+					htm += branch_show(e) + '\n'
+					merge_info = res.merge
+					push_info = res.push
+					tag = res.tag
+
+					htm += '[merge_info]\n' + merge_info
+					htm += '\n[push_info]\n' + push_info
+					if (!(tag === undefined))
+						htm += '\n[tag_info]\n' + tag
+
+					htm += '\n'
+
+				}
 				htm += '</pre>'
+
 			}
 
 

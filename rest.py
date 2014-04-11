@@ -66,19 +66,20 @@ class MergeBranch:
         #print usr_data
 
 
-
         merge_list = merge_list.split(',')
         merge_list = [e.strip() for e in merge_list]
 
 
         if tp == 'dv':
-            res = DevVcsTool.except_wrapper(DevVcsTool.merge_branch, 'develop', merge_list, merge_info, merge_tag)
+            res = DevVcsTool.except_wrapper(DevVcsTool.merge_branch, 'develop', merge_list, merge_info, '')
 
         elif tp == 'qa':
-            res = DevVcsTool.except_wrapper(DevVcsTool.merge_branch, 'qa/'+base_br, merge_list, merge_info, merge_tag)
+            res = DevVcsTool.except_wrapper(DevVcsTool.merge_branch, 'qa/'+base_br, merge_list, merge_info, '')
+
 
         elif tp == 'hf':
-            res = DevVcsTool.except_wrapper(DevVcsTool.merge_branch, 'hotfix/'+base_br, merge_list, merge_info, merge_tag)
+            merge_br = 'hotfix/'+usr_data['merge_list']
+            res = DevVcsTool.except_wrapper(DevVcsTool.merge_hotfix_branch, [merge_br, ], merge_info, merge_tag)
 
         elif tp == 'ms':
             merge_br = 'release/version-'+usr_data['merge_list']
@@ -99,6 +100,9 @@ class MergeCheck:
     def POST(self, tp):
 
         usr_data = dict(web.input())
+        #print usr_data
+
+
         base_br = usr_data['base_br']
         merge_list = usr_data['merge_list']
 
@@ -114,7 +118,8 @@ class MergeCheck:
             res = DevVcsTool.except_wrapper(DevVcsTool.check_merge_branch, 'qa/'+base_br, merge_list)
 
         elif tp == 'hf':
-            res = DevVcsTool.except_wrapper(DevVcsTool.check_merge_branch, 'hotfix/'+base_br, merge_list)
+            merge_br = 'hotfix/'+usr_data['merge_list']
+            res = DevVcsTool.except_wrapper(DevVcsTool.check_merge_branch, base_br, [merge_br, ])
 
         elif tp == 'ms':
             merge_br = 'release/version-'+usr_data['merge_list']
