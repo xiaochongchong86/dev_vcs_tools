@@ -171,6 +171,11 @@ class DevVcsTool:
     def esc_message(self, msg):
         return msg.replace('\\','\\\\').replace("'","''")
 
+
+    def recent_tag(self, num):
+        cmd = 'git tag -l | head -%s' % (num, )
+        return self.do_cmd_except(cmd)
+
     def create_tag(self, tag, info):
         cmd = "git tag -a v%s -m '%s'" % (tag, self.esc_message(info))
         self.do_cmd_except(cmd)
@@ -383,6 +388,7 @@ def all_merge_stat():
              'nomerge_dep_stat': nomerge_dep_stat,
              'nomerge_master_dev_stat': nomerge_master_dev_stat,
              'heads': dvt.get_heads(),
+             'tags': dvt.recent_tag(10),
              }
 
 

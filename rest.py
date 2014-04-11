@@ -4,6 +4,7 @@
 import web
 import sys, os
 import json
+import traceback
 import DevVcsTool
 
 
@@ -18,15 +19,30 @@ urls = (
 
 app = web.application(urls, globals())
 
+def traceback_wrapper(fun, *args, **kwds):
+    try:
+        res = fun(*args, **kwds)
+    except:
+        traceback.print_exc()
+        res = { 'code': 2, 'err': traceback.format_exc() }
+
+
+    return json.dumps(res)
+
 
 class MergeStat:
     def GET(self):
-        res = DevVcsTool.except_wrapper(DevVcsTool.all_merge_stat)
-        return json.dumps(res)
+        return traceback_wrapper(self.do_GET)
+
+    def do_GET(self):
+        return DevVcsTool.except_wrapper(DevVcsTool.all_merge_stat)
 
 
 class Branch:
     def POST(self, tp, br):
+        return traceback_wrapper(self.do_POST, tp, br)
+
+    def do_POST(self, tp, br):
         #print tp, br
         post_argu = dict(web.input())
 
@@ -52,11 +68,15 @@ class Branch:
         else:
             res = {'code': 1, 'err': 'err type: '+tp}
 
-        return json.dumps(res)
+        return res
 
 
 class MergeBranch:
     def POST(self, tp):
+        return traceback_wrapper(self.do_POST, tp)
+
+
+    def do_POST(self, tp):
 
         usr_data = dict(web.input())
         base_br = usr_data['base_br']
@@ -92,12 +112,15 @@ class MergeBranch:
         else:
             res = {'code': 1, 'err': 'err type: '+tp}
 
-        return json.dumps(res)
+        return res
 
 
 
 class MergeCheck:
     def POST(self, tp):
+        return traceback_wrapper(self.do_POST, tp)
+
+    def do_POST(self, tp):
 
         usr_data = dict(web.input())
         #print usr_data
@@ -132,7 +155,7 @@ class MergeCheck:
         else:
             res = {'code': 1, 'err': 'err type: '+tp}
 
-        return json.dumps(res)
+        return res
 
 
 

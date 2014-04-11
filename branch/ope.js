@@ -268,6 +268,12 @@ function merge_stat_all(response, status, xhr)
     var nomerge_dep_stat = obj.nomerge_dep_stat
 	var nomerge_master_dev_stat = obj.nomerge_master_dev_stat
 	var heads = obj.heads
+	var tags = obj.tags
+		//alert(tags)
+	htm += '<h3>最新的10个tag</h3>'
+
+	htm += '<hr/>'
+	htm += '<pre>' + tags + '</pre>'
 		/*
 	htm += '<h3>没有合并入master的release</h3>'
 	htm += '<hr/>'
