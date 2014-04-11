@@ -273,7 +273,13 @@ function merge_stat_all(response, status, xhr)
 	htm += '<h3>最新的10个tag</h3>'
 
 	htm += '<hr/>'
-	htm += '<pre>' + tags + '</pre>'
+	htm += '<pre>'
+	for (var t in tags) {
+		htm += tags[t] + '\n'
+		htm += '--------------------\n'
+	}
+	htm += '</pre>'
+
 		/*
 	htm += '<h3>没有合并入master的release</h3>'
 	htm += '<hr/>'

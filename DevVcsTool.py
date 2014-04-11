@@ -174,7 +174,17 @@ class DevVcsTool:
 
     def recent_tag(self, num):
         cmd = 'git tag -l | head -%s' % (num, )
-        return self.do_cmd_except(cmd)
+        tags = self.do_cmd_except(cmd)
+        tags = tags.splitlines()
+        tags = [e.strip() for e in tags]
+
+        rv = []
+        cmd_format = 'git show --quiet --pretty=format:"%%h %%ar %%an %%s" %s'
+        for t in tags:
+            cmd = cmd_format % (t, )
+            rv.append(self.do_cmd_except(cmd))
+
+        return rv
 
     def create_tag(self, tag, info):
         cmd = "git tag -a v%s -m '%s'" % (tag, self.esc_message(info))
