@@ -50,7 +50,7 @@ function check_merge_br_closure(tp)
 			var base = $(input).val()
 			var mlist = $(merge_list).val()
 
-			uri = "/git/mergecheck/" + tp
+			uri = "git/mergecheck/" + tp
 			$.post(
 				   uri,
 	               {base_br: base, merge_list: mlist},
@@ -116,7 +116,7 @@ function merge_br_closure(tp)
 			var base = $(input).val()
 			var mlist = $(merge_list).val()
 
-			uri = "/git/merge/" + tp
+			uri = "git/merge/" + tp
 			$.post(
 				   uri,
 	               {base_br: base, merge_list: mlist, merge_info: $(input_merge_info).val(), merge_tag: $(input_merge_tag).val()},
@@ -176,7 +176,7 @@ function create_br_closure(tp)
 			ib = $(input_base).val()
 			$(div).html('<pre>loading...</pre>')
 			br = $(input).val()
-			uri = "/git/branch/" + tp
+			uri = "git/branch/" + tp
 			$.post(uri, {base_br: ib, new_br: br}, create_br_cb_closure(div))
 
 		}
@@ -217,13 +217,13 @@ function create_br_cb_closure(user_data)
 function init_show()
 {
 	/*
-	$.get("/git/stat/merge/qa", qa_merge_stat)
-	$.get("/git/stat/merge/dev", dev_merge_stat)
-	$.get("/git/stat/merge/deploy", deploy_merge_stat)
-	$.get("/git/stat/merge/master", master_merge_stat)
+	$.get("git/stat/merge/qa", qa_merge_stat)
+	$.get("git/stat/merge/dev", dev_merge_stat)
+	$.get("git/stat/merge/deploy", deploy_merge_stat)
+	$.get("git/stat/merge/master", master_merge_stat)
 	*/
 
-	$.get("/git/stat/merge", merge_stat_all)
+	$.get("git/stat/merge", merge_stat_all)
 }
 
 function branch_show(br)
