@@ -84,7 +84,10 @@ function check_merge_br_cb_closure(user_data)
 						if (cb[c].length == 0) {
 							htm += '没有未合并的内容\n'
 						} else {
-							htm += cb[c] + '\n'
+							for (var k in cb[c]) {
+								htm += gitweb_commit(cb[c][k][0], cb[c][k]) + '\n'
+							}
+							//htm += cb[c] + '\n'
 						}
 					}
 
@@ -234,14 +237,28 @@ function branch_show(br)
 	return '<font color="blue">' + br + '</font>'
 }
 
+function gitweb_commit(commit_id, show)
+{
+	// http://172.16.10.48:8598/?p=.git;a=commit;h=ac23adab42ab40dd0afaa89f426115b85991c701
+	href = "http://172.16.10.48:8598/?p=.git;a=commit;h=" + commit_id
+	ac = '<a href="' + href  + '">' + show + '</a>'
+
+	return ac
+}
+
 function base_br_show(br, heads)
 {
-	return '<h4>' + branch_show(br) + ' ' + heads[br] + '</h4>'
+	ac = gitweb_commit(heads[br][0], heads[br])
+
+	return '<h4>' + branch_show(br) + ' '+ ac + '</h4>'
 }
 
 function cmp_br_show(br, heads)
 {
-	return branch_show(br) + ' ' + heads[br]
+
+    ac = gitweb_commit(heads[br][0], heads[br])
+
+	return branch_show(br) + ' ' + ac
 }
 
 
@@ -324,7 +341,11 @@ function merge_stat_all(response, status, xhr)
 		for (var c in cb) {
 			//htm += '[' + c + ']\n'
 			htm += cmp_br_show(c, heads) + '\n'
-			htm += cb[c]
+			//htm += cb[c]
+			for (var k in cb[c]) {
+				htm += gitweb_commit(cb[c][k][0], cb[c][k]) + '\n'
+			}
+
 			isnomerge = true
 		}
 		if (!isnomerge) {

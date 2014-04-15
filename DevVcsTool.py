@@ -131,14 +131,24 @@ class DevVcsTool:
         elif  merge_type == 'merges':
             merge_type_flag = '--merges'
 
-        cmd_format = 'git log %s/%s..%s/%s ' + merge_type_flag + ' --pretty=format:"%%h %%ar %%an %%s"'
         for b_b in base_brs:
             rv[b_b] = {}
             for c_b in cmp_brs:
-                cmd = cmd_format % (self.rep, b_b, self.rep, c_b)
-                rv[b_b][c_b] = self.do_cmd_except(cmd)
+                cmd_argu = '%s/%s..%s/%s %s' %  (self.rep, b_b, self.rep, c_b, merge_type_flag)
+                rv[b_b][c_b] = self.log_cmd_parse(cmd_argu)
 
         return rv
+
+    def log_cmd_parse(self, cmd_argu):
+        pretty = '--pretty=format:"%h %ar %an %s"'
+        cmd = 'git log %s %s' % (cmd_argu, pretty)
+        logs = self.do_cmd_except(cmd)
+        logs = logs.splitlines()
+        logs = [e.strip() for e in logs]
+        logs = [e.split() for e in logs]
+        logs = [(e[0], ' '.join(e[1:])) for e in logs]
+
+        return logs
 
 
     # tools
@@ -146,12 +156,11 @@ class DevVcsTool:
     def all_remote_branch_head(self):
         all_brs = self.remote_branch_list('*')
         all_brs = self.parse_remote_branch_list(all_brs)
-        cmd_format = 'git log %s/%s -1 --pretty=format:"%%h %%ar %%an %%s"'
 
         rv = {}
         for b in all_brs:
-                cmd = cmd_format % (self.rep, b)
-                rv[b] = self.do_cmd_except(cmd)
+                cmd_argu = '%s/%s -1' % (self.rep, b)
+                rv[b] = self.log_cmd_parse(cmd_argu)[0]
 
 
         return rv
