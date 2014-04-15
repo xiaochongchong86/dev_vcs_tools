@@ -85,7 +85,7 @@ function check_merge_br_cb_closure(user_data)
 							htm += '没有未合并的内容\n'
 						} else {
 							for (var k in cb[c]) {
-								htm += gitweb_commit(cb[c][k][0], cb[c][k]) + '\n'
+								htm += gitweb_commit(cb[c][k][0], cb[c][k][2]) + '\n'
 							}
 							//htm += cb[c] + '\n'
 						}
@@ -241,14 +241,14 @@ function gitweb_commit(commit_id, show)
 {
 	// http://172.16.10.48:8598/?p=.git;a=commit;h=ac23adab42ab40dd0afaa89f426115b85991c701
 	href = "http://172.16.10.48:8598/?p=.git;a=commit;h=" + commit_id
-	ac = '<a href="' + href  + '">' + show + '</a>'
+	ac = '<a href="' + href  + '">' + commit_id + ' ' + show + '</a>'
 
 	return ac
 }
 
 function base_br_show(br, heads)
 {
-	ac = gitweb_commit(heads[br][0], heads[br])
+	ac = gitweb_commit(heads[br][0], heads[br][2])
 
 	return '<h4>' + branch_show(br) + ' '+ ac + '</h4>'
 }
@@ -256,7 +256,7 @@ function base_br_show(br, heads)
 function cmp_br_show(br, heads)
 {
 
-    ac = gitweb_commit(heads[br][0], heads[br])
+    ac = gitweb_commit(heads[br][0], heads[br][2])
 
 	return branch_show(br) + ' ' + ac
 }
@@ -288,6 +288,7 @@ function merge_stat_all(response, status, xhr)
 	var nomerge_master_dev_stat = obj.nomerge_master_dev_stat
 	var heads = obj.heads
 	var tags = obj.tags
+	var old_branch = obj.old_branch
 		//alert(tags)
 	htm += '<h3>最新的10个tag</h3>'
 
@@ -343,7 +344,7 @@ function merge_stat_all(response, status, xhr)
 			htm += cmp_br_show(c, heads) + '\n'
 			//htm += cb[c]
 			for (var k in cb[c]) {
-				htm += gitweb_commit(cb[c][k][0], cb[c][k]) + '\n'
+				htm += gitweb_commit(cb[c][k][0], cb[c][k][2]) + '\n'
 			}
 
 			isnomerge = true
@@ -353,6 +354,20 @@ function merge_stat_all(response, status, xhr)
 		}
 		htm += '</pre>'
 
+	}
+
+
+	htm += '<h3>develop已经并入的开发分支</h3>'
+	htm += '<hr/>'
+	for (var e in cmp_dev) {
+		var cb = cmp_dev[e]
+		htm += base_br_show(e, heads)
+		htm += '<pre>'
+		for (var i = 0; i < cb.length; i++) {
+			htm += cmp_br_show(cb[i], heads) + '\n'
+			//htm += branch_show(cb[i]) + ' ' + heads[cb[i]] + '\n'
+		}
+		htm += '</pre>'
 	}
 
 
@@ -371,19 +386,6 @@ function merge_stat_all(response, status, xhr)
 		htm += '</pre>'
 	}
 
-
-	htm += '<h3>develop已经并入的开发分支</h3>'
-	htm += '<hr/>'
-	for (var e in cmp_dev) {
-		var cb = cmp_dev[e]
-		htm += base_br_show(e, heads)
-		htm += '<pre>'
-		for (var i = 0; i < cb.length; i++) {
-			htm += cmp_br_show(cb[i], heads) + '\n'
-			//htm += branch_show(cb[i]) + ' ' + heads[cb[i]] + '\n'
-		}
-		htm += '</pre>'
-	}
 
 
 
@@ -405,6 +407,27 @@ function merge_stat_all(response, status, xhr)
 		}
 		htm += '</pre>'
 	}
+
+
+	htm += '<h3>可能已经需要删除的分支统计</h3>'
+	htm += '<hr/>'
+	htm += '<h3>已经合并入develop的开发(dev/*)分支，应该可以删除</h3>'
+	for (var e in cmp_dev) {
+		var cb = cmp_dev[e]
+		htm += '<pre>'
+		for (var i = 0; i < cb.length; i++) {
+			htm += cmp_br_show(cb[i], heads) + '\n'
+			//htm += branch_show(cb[i]) + ' ' + heads[cb[i]] + '\n'
+		}
+		htm += '</pre>'
+	}
+	htm += '<h3>超过7天没有提交的分支开发(dev/*)分支，应该可以删除</h3>'
+	htm += '<pre>'
+	for (var e in old_branch) {
+		htm += cmp_br_show(old_branch[e], heads) + '\n'
+	}
+	htm += '</pre>'
+
 
 
 

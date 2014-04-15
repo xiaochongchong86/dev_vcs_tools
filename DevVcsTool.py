@@ -4,6 +4,8 @@ import os
 import commands
 import traceback
 import uuid
+import datetime
+import time
 
 class ShellCmdError(Exception):
     def __init__(self, cmd, code, err):
@@ -140,13 +142,13 @@ class DevVcsTool:
         return rv
 
     def log_cmd_parse(self, cmd_argu):
-        pretty = '--pretty=format:"%h %ar %an %s"'
+        pretty = '--date=raw --pretty=format:"%h %ad %ar %an %s"'
         cmd = 'git log %s %s' % (cmd_argu, pretty)
         logs = self.do_cmd_except(cmd)
         logs = logs.splitlines()
         logs = [e.strip() for e in logs]
         logs = [e.split() for e in logs]
-        logs = [(e[0], ' '.join(e[1:])) for e in logs]
+        logs = [(e[0], int(e[1]), ' '.join(e[3:])) for e in logs]
 
         return logs
 
@@ -188,7 +190,7 @@ class DevVcsTool:
         tags = [e.strip() for e in tags]
 
         rv = []
-        cmd_format = 'git show --quiet --pretty=format:"%%h %%ar %%an %%s" %s'
+        cmd_format = 'git show --quiet --date=local --pretty=format:"%%h %%ad %%ar %%an %%s" %s'
         for t in tags:
             cmd = cmd_format % (t, )
             rv.append(self.do_cmd_except(cmd))
@@ -378,8 +380,11 @@ def all_merge_stat():
     res_nomerge_master_dev = dvt.cmp_pref_branch_pref_branch('master', 'develop', '')
 
 
+    # /dev/* 下的分支合并情况
     dev_stat = {}
+    # /dev/* 和 /qa/* 对比
     cmp_qa = {}
+    # /dev/* 和 /develop 对比
     cmp_dev = {}
 
     collect_stat(dev_stat, cmp_qa, res_qa)
@@ -389,6 +394,24 @@ def all_merge_stat():
     collect_stat(dev_stat, cmp_tmp, res_release)
     cmp_tmp = {}
     collect_stat(dev_stat, cmp_tmp, res_master)
+
+    # 可以删除的分支提示
+
+    # 已经合并到develop的分支 使用cmp_dev就好了
+    # 非常老的没有提交的分支
+    very_old_branch = []
+    all_heads = dvt.get_heads()
+    keys = all_heads.keys()
+    keys.sort()
+    for e in keys:
+        b = all_heads[e]
+        st = datetime.datetime.fromtimestamp(b[1])
+        cpst = datetime.datetime.now() - datetime.timedelta(days=7)
+        if e not in cmp_dev['develop'] and len(e) > 4 and e[0:4] == 'dev/' and cpst > st:
+            very_old_branch.append(e)
+
+    
+    #print len(very_old_branch)
 
     #print cmp_dev
     #print dev_stat
@@ -406,8 +429,9 @@ def all_merge_stat():
              'nomerge_dev_stat': nomerge_dev_stat,
              'nomerge_dep_stat': nomerge_dep_stat,
              'nomerge_master_dev_stat': nomerge_master_dev_stat,
-             'heads': dvt.get_heads(),
+             'heads': all_heads,
              'tags': dvt.recent_tag(10),
+             'old_branch': very_old_branch,
              }
 
 
@@ -519,7 +543,8 @@ def tst():
 
 if __name__ == "__main__":
     #tst()
-    print tst2()
+    #print tst2()
+    except_wrapper(all_merge_stat)
     #print tst_check_merge_branch()
     #print tst_create_tag()
     #print tst_all_remote_branch_head()
