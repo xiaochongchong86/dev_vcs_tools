@@ -188,9 +188,11 @@ function err_show(obj)
 
 	var htm = ''
 	htm = '<pre>'
+	htm += '<font color="red">'
 	htm += 'code:' + obj.code + '\n'
 	htm += 'cmd:' + obj.cmd + '\n'
 	htm += 'err:' + obj.err + '\n'
+	htm += '</font>'
 	htm += '</pre>'
 	return htm
 
