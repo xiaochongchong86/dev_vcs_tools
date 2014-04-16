@@ -376,7 +376,6 @@ function merge_stat_all(response, status, xhr)
 
 
 
-
 	htm += '<h3>qa/*已经并入的开发分支</h3>'
 	htm += '<hr/>'
 	for (var e in cmp_qa) {
@@ -389,6 +388,27 @@ function merge_stat_all(response, status, xhr)
 		}
 		htm += '</pre>'
 	}
+
+
+	htm += '<h3>可能已经需要删除的分支统计</h3>'
+	htm += '<hr/>'
+	htm += '<h3>已经合并入develop的开发分支(dev/*)，应该可以删除</h3>'
+	for (var e in cmp_dev) {
+		var cb = cmp_dev[e]
+		htm += '<pre>'
+		for (var i = 0; i < cb.length; i++) {
+			htm += cmp_br_show(cb[i], heads) + '\n'
+			//htm += branch_show(cb[i]) + ' ' + heads[cb[i]] + '\n'
+		}
+		htm += '</pre>'
+	}
+
+	htm += '<h3>没有合并入develop，但是超过7天没有提交的开发分支(dev/*)，应该可以删除</h3>'
+	htm += '<pre>'
+	for (var e in old_branch) {
+		htm += cmp_br_show(old_branch[e], heads) + '\n'
+	}
+	htm += '</pre>'
 
 
 
@@ -413,24 +433,6 @@ function merge_stat_all(response, status, xhr)
 	}
 
 
-	htm += '<h3>可能已经需要删除的分支统计</h3>'
-	htm += '<hr/>'
-	htm += '<h3>已经合并入develop的开发(dev/*)分支，应该可以删除</h3>'
-	for (var e in cmp_dev) {
-		var cb = cmp_dev[e]
-		htm += '<pre>'
-		for (var i = 0; i < cb.length; i++) {
-			htm += cmp_br_show(cb[i], heads) + '\n'
-			//htm += branch_show(cb[i]) + ' ' + heads[cb[i]] + '\n'
-		}
-		htm += '</pre>'
-	}
-	htm += '<h3>超过7天没有提交的分支开发(dev/*)分支，应该可以删除</h3>'
-	htm += '<pre>'
-	for (var e in old_branch) {
-		htm += cmp_br_show(old_branch[e], heads) + '\n'
-	}
-	htm += '</pre>'
 
 
 
