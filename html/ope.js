@@ -75,17 +75,18 @@ function check_merge_br_cb_closure(user_data)
 				htm = '<pre>'
 				var check_stat = obj.res.stat
 				var heads = obj.res.heads
+				var hash2br = hash_to_branch(heads)
 				for (var e in check_stat) {
 					var cb = check_stat[e]
-					htm += base_br_show(e, heads)
+					htm += base_br_show(e, heads, hash2br)
 
 					for (var c in cb) {
-						htm += cmp_br_show(c, heads) + '\n'
+						htm += cmp_br_show(c, heads, hash2br) + '\n'
 						if (cb[c].length == 0) {
 							htm += '没有未合并的内容\n'
 						} else {
 							for (var k in cb[c]) {
-								htm += gitweb_commit(cb[c][k][0], cb[c][k][2]) + '\n'
+								htm += gitweb_commit(cb[c][k][0], cb[c][k][2], hash2br) + '\n'
 							}
 							//htm += cb[c] + '\n'
 						}
@@ -237,34 +238,67 @@ function branch_show(br)
 	return '<font color="blue">' + br + '</font>'
 }
 
-function gitweb_commit(commit_id, show)
+
+function gitweb_branch(branch, port)
+{
+	// http://172.16.10.48:8599/?p=.git;a=shortlog;h=refs/remotes/origin/dev/yangsong/scron
+	href = "http://172.16.10.48:"+port+"/?p=.git;a=shortlog;h=refs/remotes/origin/"+branch
+	ac = '<span><a href="' + href  + '"><font color="red">{' + branch + '}</font></a></span>'
+
+	return ac
+}
+
+function gitweb_commit(commit_id, show, hash2br)
 {
 	// http://172.16.10.48:8598/?p=.git;a=commit;h=ac23adab42ab40dd0afaa89f426115b85991c701
 	// very ugly.....
 	port = $.ajax({url:"gitweb/port", async:false})
 	port = port.responseText
+	htm = ''
+	if (hash2br.hasOwnProperty(commit_id)) {
+		brs = hash2br[commit_id]
+		for (b in brs) {
+			htm += gitweb_branch(brs[b], port)
+		}
+	}
+
 
 	href = "http://172.16.10.48:"+port+"/?p=.git;a=commit;h=" + commit_id
 	ac = '<a href="' + href  + '">' + commit_id + ' ' + show + '</a>'
+	htm += " " + ac
 
-	return ac
+	return htm
 }
 
-function base_br_show(br, heads)
+function base_br_show(br, heads, hash2br)
 {
-	ac = gitweb_commit(heads[br][0], heads[br][2])
+	ac = gitweb_commit(heads[br][0], heads[br][2], hash2br)
 
 	return '<h4>' + branch_show(br) + ' '+ ac + '</h4>'
 }
 
-function cmp_br_show(br, heads)
+function cmp_br_show(br, heads, hash2br)
 {
 
-    ac = gitweb_commit(heads[br][0], heads[br][2])
+    ac = gitweb_commit(heads[br][0], heads[br][2], hash2br)
 
 	return branch_show(br) + ' ' + ac
 }
 
+function hash_to_branch(heads)
+{
+	var hash2br = new Array()
+	for (h in heads) {
+		var hs = heads[h][0]
+		if (!hash2br.hasOwnProperty(hs)) {
+			hash2br[hs] = []
+		}
+		hash2br[hs].push(h)
+	    //alert(h+' '+hs)
+	}
+	return hash2br
+
+}
 
 function merge_stat_all(response, status, xhr)
 {
@@ -294,6 +328,10 @@ function merge_stat_all(response, status, xhr)
 	var heads = obj.heads
 	var tags = obj.tags
 	var old_branch = obj.old_branch
+
+	var hash2br = hash_to_branch(heads)
+
+
 		//alert(tags)
 	htm += '<h3>最新的10个tag</h3>'
 
@@ -340,16 +378,16 @@ function merge_stat_all(response, status, xhr)
 	htm += '<hr/>'
 	for (var e in nomerge_master_dev_stat) {
 		var cb = nomerge_master_dev_stat[e]
-		htm += base_br_show(e, heads)
+		htm += base_br_show(e, heads, hash2br)
 
 		var isnomerge = false
 		htm += '<pre>'
 		for (var c in cb) {
 			//htm += '[' + c + ']\n'
-			htm += cmp_br_show(c, heads) + '\n'
+			htm += cmp_br_show(c, heads, hash2br) + '\n'
 			//htm += cb[c]
 			for (var k in cb[c]) {
-				htm += gitweb_commit(cb[c][k][0], cb[c][k][2]) + '\n'
+				htm += gitweb_commit(cb[c][k][0], cb[c][k][2], hash2br) + '\n'
 			}
 
 			isnomerge = true
@@ -366,10 +404,10 @@ function merge_stat_all(response, status, xhr)
 	htm += '<hr/>'
 	for (var e in cmp_dev) {
 		var cb = cmp_dev[e]
-		htm += base_br_show(e, heads)
+		htm += base_br_show(e, heads, hash2br)
 		htm += '<pre>'
 		for (var i = 0; i < cb.length; i++) {
-			htm += cmp_br_show(cb[i], heads) + '\n'
+			htm += cmp_br_show(cb[i], heads, hash2br) + '\n'
 			//htm += branch_show(cb[i]) + ' ' + heads[cb[i]] + '\n'
 		}
 		htm += '</pre>'
@@ -380,17 +418,17 @@ function merge_stat_all(response, status, xhr)
 	htm += '<hr/>'
 	for (var e in nomerge_develop_qa_stat) {
 		var cb = nomerge_develop_qa_stat[e]
-		htm += base_br_show(e, heads)
+		htm += base_br_show(e, heads, hash2br)
 
 
 		htm += '<pre>'
 		for (var c in cb) {
 			//htm += '[' + c + ']\n'
-			htm += cmp_br_show(c, heads) + '\n'
+			htm += cmp_br_show(c, heads, hash2br) + '\n'
 			//htm += cb[c]
 
 			for (var k in cb[c]) {
-				htm += gitweb_commit(cb[c][k][0], cb[c][k][2]) + '\n'
+				htm += gitweb_commit(cb[c][k][0], cb[c][k][2], hash2br) + '\n'
 			}
 
 			if (cb[c].length == 0) {
@@ -411,10 +449,10 @@ function merge_stat_all(response, status, xhr)
 	htm += '<hr/>'
 	for (var e in cmp_qa) {
 		var cb = cmp_qa[e]
-		htm += base_br_show(e, heads)
+		htm += base_br_show(e, heads, hash2br)
 		htm += '<pre>'
 		for (var i = 0; i < cb.length; i++) {
-			htm += cmp_br_show(cb[i], heads) + '\n'
+			htm += cmp_br_show(cb[i], heads, hash2br) + '\n'
 			//htm += branch_show(cb[i]) + ' ' + heads[cb[i]] + '\n'
 		}
 		htm += '</pre>'
@@ -428,7 +466,7 @@ function merge_stat_all(response, status, xhr)
 		var cb = cmp_dev[e]
 		htm += '<pre>'
 		for (var i = 0; i < cb.length; i++) {
-			htm += cmp_br_show(cb[i], heads) + '\n'
+			htm += cmp_br_show(cb[i], heads, hash2br) + '\n'
 			//htm += branch_show(cb[i]) + ' ' + heads[cb[i]] + '\n'
 		}
 		htm += '</pre>'
@@ -437,7 +475,7 @@ function merge_stat_all(response, status, xhr)
 	htm += '<h3>没有合并入develop，但是超过7天没有提交的开发分支(dev/*)，应该可以删除</h3>'
 	htm += '<pre>'
 	for (var e in old_branch) {
-		htm += cmp_br_show(old_branch[e], heads) + '\n'
+		htm += cmp_br_show(old_branch[e], heads, hash2br) + '\n'
 	}
 	htm += '</pre>'
 
@@ -449,11 +487,11 @@ function merge_stat_all(response, status, xhr)
 
 	for (var e in dev_stat) {
 		var cb = dev_stat[e]
-		htm += base_br_show(e, heads)
+		htm += base_br_show(e, heads, hash2br)
 		htm += '<pre>'
 		var ismerge = false
 		for (var i = 0; i < cb.length; i++) {
-			htm += cmp_br_show(cb[i], heads) + '\n'
+			htm += cmp_br_show(cb[i], heads, hash2br) + '\n'
 			//htm += branch_show(cb[i]) + ' ' + heads[cb[i]] + '\n'
 			ismerge = true
 		}

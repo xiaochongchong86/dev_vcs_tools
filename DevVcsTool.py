@@ -31,7 +31,7 @@ class DevVcsTool:
         self.fetch()
         self.clear_local()
         self.del_local_branch('tmp/*')
-        self.heads = self.all_remote_branch_head()
+        self.heads, self.hash2br = self.all_remote_branch_head()
 
     def do_cmd(self, cmd):
         #cmd = 'export LANG=en_US.utf8 && %s' % (cmd, )
@@ -56,6 +56,9 @@ class DevVcsTool:
 
     def get_heads(self):
         return self.heads
+
+    def get_hash_br(self):
+        return self.hash2br
 
     # 清理当前
     def clear_local(self):
@@ -159,13 +162,17 @@ class DevVcsTool:
         all_brs = self.remote_branch_list('*')
         all_brs = self.parse_remote_branch_list(all_brs)
 
-        rv = {}
+        br2hash = {}
+        hash2br = {}
         for b in all_brs:
                 cmd_argu = '%s/%s -1' % (self.rep, b)
-                rv[b] = self.log_cmd_parse(cmd_argu)[0]
+                h = self.log_cmd_parse(cmd_argu)[0]
+                br2hash[b] = h
+                hash2br.setdefault(h[0], [])
+                hash2br[h[0]].append(b)
 
 
-        return rv
+        return br2hash, hash2br
 
 
     # check the merge state of pref branch and some other pref branch
@@ -436,6 +443,7 @@ def all_merge_stat():
              'nomerge_master_dev_stat': nomerge_master_dev_stat,
              'nomerge_develop_qa_stat': nomerge_develop_qa_stat,
              'heads': all_heads,
+
              'tags': dvt.recent_tag(10),
              'old_branch': very_old_branch,
              }
