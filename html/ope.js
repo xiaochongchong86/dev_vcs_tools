@@ -240,7 +240,11 @@ function branch_show(br)
 function gitweb_commit(commit_id, show)
 {
 	// http://172.16.10.48:8598/?p=.git;a=commit;h=ac23adab42ab40dd0afaa89f426115b85991c701
-	href = "http://172.16.10.48:8590/?p=.git;a=commit;h=" + commit_id
+	// very ugly.....
+	port = $.ajax({url:"gitweb/port", async:false})
+	port = port.responseText
+
+	href = "http://172.16.10.48:"+port+"/?p=.git;a=commit;h=" + commit_id
 	ac = '<a href="' + href  + '">' + commit_id + ' ' + show + '</a>'
 
 	return ac
