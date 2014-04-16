@@ -314,7 +314,8 @@ def create_solid_branch(base, branch, is_forth_push = False):
 
 
 
-def collect_stat(dev_stat, base_stat, res_cmp):
+def collect_stat(dev_stat, res_cmp):
+    base_stat = {}
     for e in res_cmp:
         base_stat[e] = []
         for b in res_cmp[e]:
@@ -324,6 +325,7 @@ def collect_stat(dev_stat, base_stat, res_cmp):
                 base_stat[e].append(b)
                 dev_stat[b].append(e)
 
+    return base_stat
 
 def collect_nomerge_stat(res_cmp):
     base_stat = {}
@@ -370,6 +372,8 @@ def all_merge_stat():
     res_release = dvt.cmp_pref_branch_pref_branch('release/*', 'dev/*', '')
     res_master = dvt.cmp_pref_branch_pref_branch('master', 'dev/*', '')
 
+    # 检查develop和qa的对比
+    res_nomerge_develop_qa = dvt.cmp_pref_branch_pref_branch('develop', 'qa/*', 'no_merges')
     # 检查develop的功能有多少没有进入release
     res_nomerge_dev = dvt.cmp_pref_branch_pref_branch('release/*', 'develop', '')
 
@@ -383,17 +387,13 @@ def all_merge_stat():
     # /dev/* 下的分支合并情况
     dev_stat = {}
     # /dev/* 和 /qa/* 对比
-    cmp_qa = {}
+    cmp_qa = collect_stat(dev_stat, res_qa)
     # /dev/* 和 /develop 对比
-    cmp_dev = {}
+    cmp_dev = collect_stat(dev_stat, res_develop)
 
-    collect_stat(dev_stat, cmp_qa, res_qa)
-    collect_stat(dev_stat, cmp_dev, res_develop)
 
-    cmp_tmp = {}
-    collect_stat(dev_stat, cmp_tmp, res_release)
-    cmp_tmp = {}
-    collect_stat(dev_stat, cmp_tmp, res_master)
+    collect_stat(dev_stat, res_release)
+    collect_stat(dev_stat, res_master)
 
     # 可以删除的分支提示
 
@@ -417,9 +417,14 @@ def all_merge_stat():
     #print dev_stat
 
     ###############
+    # 去除没有区别的branch key
     nomerge_dev_stat = collect_nomerge_stat(res_nomerge_dev)
     nomerge_dep_stat = collect_nomerge_stat(res_nomerge_dep)
     nomerge_master_dev_stat = collect_nomerge_stat(res_nomerge_master_dev)
+    # 保留了没有区别的branch key
+    nomerge_develop_qa_stat =  res_nomerge_develop_qa
+    #print res_nomerge_develop_qa
+    #print nomerge_develop_qa_stat
     #print dev_stat
     #print nomerge_dev_stat
     #print nomerge_dep_stat
@@ -429,6 +434,7 @@ def all_merge_stat():
              'nomerge_dev_stat': nomerge_dev_stat,
              'nomerge_dep_stat': nomerge_dep_stat,
              'nomerge_master_dev_stat': nomerge_master_dev_stat,
+             'nomerge_develop_qa_stat': nomerge_develop_qa_stat,
              'heads': all_heads,
              'tags': dvt.recent_tag(10),
              'old_branch': very_old_branch,

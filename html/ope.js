@@ -290,6 +290,7 @@ function merge_stat_all(response, status, xhr)
     var nomerge_dev_stat = obj.nomerge_dev_stat
     var nomerge_dep_stat = obj.nomerge_dep_stat
 	var nomerge_master_dev_stat = obj.nomerge_master_dev_stat
+	var nomerge_develop_qa_stat = obj.nomerge_develop_qa_stat
 	var heads = obj.heads
 	var tags = obj.tags
 	var old_branch = obj.old_branch
@@ -373,6 +374,36 @@ function merge_stat_all(response, status, xhr)
 		}
 		htm += '</pre>'
 	}
+
+
+	htm += '<h3>develop和qa/*对比统计</h3>'
+	htm += '<hr/>'
+	for (var e in nomerge_develop_qa_stat) {
+		var cb = nomerge_develop_qa_stat[e]
+		htm += base_br_show(e, heads)
+
+
+		htm += '<pre>'
+		for (var c in cb) {
+			//htm += '[' + c + ']\n'
+			htm += cmp_br_show(c, heads) + '\n'
+			//htm += cb[c]
+
+			for (var k in cb[c]) {
+				htm += gitweb_commit(cb[c][k][0], cb[c][k][2]) + '\n'
+			}
+
+			if (cb[c].length == 0) {
+				htm += '没有什么区别\n'
+			}
+
+
+		}
+
+		htm += '</pre>'
+
+	}
+
 
 
 
