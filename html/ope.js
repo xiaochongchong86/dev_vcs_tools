@@ -243,7 +243,7 @@ function gitweb_branch(branch, port)
 {
 	// http://172.16.10.48:8599/?p=.git;a=shortlog;h=refs/remotes/origin/dev/yangsong/scron
 	href = "http://172.16.10.48:"+port+"/?p=.git;a=shortlog;h=refs/remotes/origin/"+branch
-	ac = '<span><a href="' + href  + '"><font color="red">{' + branch + '}</font></a></span>'
+	ac = '<span class="remote"><a href="' + href  + '"><font color="red">' + branch + '</font></a></span>'
 
 	return ac
 }
@@ -255,6 +255,12 @@ function gitweb_commit(commit_id, show, hash2br)
 	port = $.ajax({url:"gitweb/port", async:false})
 	port = port.responseText
 	htm = ''
+
+
+	href = "http://172.16.10.48:"+port+"/?p=.git;a=commit;h=" + commit_id
+	ac = '<a href="' + href  + '">' + commit_id + ' ' + show + '</a>'
+	htm += ac
+
 	if (hash2br.hasOwnProperty(commit_id)) {
 		brs = hash2br[commit_id]
 		for (b in brs) {
@@ -262,10 +268,6 @@ function gitweb_commit(commit_id, show, hash2br)
 		}
 	}
 
-
-	href = "http://172.16.10.48:"+port+"/?p=.git;a=commit;h=" + commit_id
-	ac = '<a href="' + href  + '">' + commit_id + ' ' + show + '</a>'
-	htm += " " + ac
 
 	return htm
 }
