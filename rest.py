@@ -6,6 +6,7 @@ import sys, os
 import json
 import traceback
 import DevVcsTool
+import auth
 
 
 urls = (
@@ -19,12 +20,34 @@ urls = (
 
 app = web.application(urls, globals())
 
+
+class PrivilegeError(Exception):
+    def __init__(self, need_p, now_p):
+        self.need_p = need_p
+        self.now_p = now_p
+
+    def __str__(self):
+        return 'your privilege is not enough, need larger than %s, but now is %s' % (self.need_p, self.now_p)
+
+
+
+def privilege_check(need_p):
+    ep, now_p = auth.privilege(need_p)
+    if not ep:
+        raise PrivilegeError(need_p, now_p)
+
+
 def traceback_wrapper(fun, *args, **kwds):
     try:
         res = fun(*args, **kwds)
+
+
+    except PrivilegeError as e:
+        res = {'code': 2, 'err': str(e)}
+
     except:
         traceback.print_exc()
-        res = { 'code': 2, 'err': traceback.format_exc() }
+        res = { 'code': 3, 'err': traceback.format_exc() }
 
 
     return json.dumps(res)
@@ -35,10 +58,27 @@ class MergeStat:
         return traceback_wrapper(self.do_GET)
 
     def do_GET(self):
+        privilege_check(auth.PRG_GUEST)
         return DevVcsTool.except_wrapper(DevVcsTool.all_merge_stat)
 
 
 class Branch:
+    def check_create_prg(self, tp, br):
+        user = web.cookies().get('user')
+        user_br_path = user+'/'
+
+        if tp == 'dv' or tp == 'hf':
+            if user_br_path == br[:len(user_br_path)]:
+                privilege_check(auth.PRG_BRANCH_CREATE_USER)
+            else:
+                privilege_check(auth.PRG_BRANCH_CREATE_ANY)
+
+        elif tp == 'qa':
+            privilege_check(auth.PRG_BRANCH_QA)
+
+        else:
+            privilege_check(auth.PRG_ROOT)
+
     def POST(self, tp):
         return traceback_wrapper(self.do_POST, tp)
 
@@ -51,6 +91,7 @@ class Branch:
         br = usr_data['new_br']
 
 
+        self.check_create_prg(tp, br)
         if tp == 'dv':
             res = DevVcsTool.except_wrapper(DevVcsTool.create_solid_branch, base_br, 'dev/'+br)
 
@@ -60,12 +101,12 @@ class Branch:
         elif tp == 'hf':
             res = DevVcsTool.except_wrapper(DevVcsTool.create_solid_branch, 'master', 'hotfix/'+br)
 
-        elif tp == 'rl':
-            res = DevVcsTool.except_wrapper(DevVcsTool.create_solid_branch, 'develop', 'release/version-'+br)
+        #elif tp == 'rl':
+        #    res = DevVcsTool.except_wrapper(DevVcsTool.create_solid_branch, 'develop', 'release/version-'+br)
 
 
-        elif tp == 'dp':
-            res = DevVcsTool.except_wrapper(DevVcsTool.create_solid_branch, 'release/version-'+br, 'develop', True)
+        #elif tp == 'dp':
+        #    res = DevVcsTool.except_wrapper(DevVcsTool.create_solid_branch, 'release/version-'+br, 'develop', True)
 
 
         else:
@@ -75,6 +116,22 @@ class Branch:
 
 
 class MergeBranch:
+    def check_create_prg(self, tp):
+        user = web.cookies().get('user')
+
+        if tp == 'qa':
+            privilege_check(auth.PRG_BRANCH_QA)
+
+        elif tp == 'dv':
+            privilege_check(auth.PRG_BRANCH_DEVELOP)
+
+        elif tp == 'hf' or tp == 'ms' or tp == 'ms2':
+            privilege_check(auth.PRG_BRANCH_MASTER)
+
+        else:
+            privilege_check(auth.PRG_ROOT)
+
+
     def POST(self, tp):
         return traceback_wrapper(self.do_POST, tp)
 
@@ -92,6 +149,8 @@ class MergeBranch:
         merge_list = merge_list.split(',')
         merge_list = [e.strip() for e in merge_list]
 
+
+        self.check_create_prg(tp)
 
         if tp == 'dv':
             res = DevVcsTool.except_wrapper(DevVcsTool.merge_branch, 'develop', merge_list, merge_info, '')
@@ -127,7 +186,7 @@ class MergeCheck:
 
         usr_data = dict(web.input())
         #print usr_data
-
+        privilege_check(auth.PRG_GUEST)
 
         base_br = usr_data['base_br']
         merge_list = usr_data['merge_list']

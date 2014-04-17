@@ -193,8 +193,12 @@ function err_show(obj)
 	var htm = ''
 	htm = '<pre>'
 	htm += '<font color="red">'
+	htm += 'ERROR OCCUR:\n'
 	htm += 'code:' + obj.code + '\n'
-	htm += 'cmd:' + obj.cmd + '\n'
+	if (obj.hasOwnProperty('cmd')) {
+		htm += 'cmd:' + obj.cmd + '\n'
+	}
+
 	htm += 'err:' + obj.err + '\n'
 	htm += '</font>'
 	htm += '</pre>'
