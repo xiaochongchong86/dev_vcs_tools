@@ -86,7 +86,7 @@ function check_merge_br_cb_closure(user_data)
 							htm += '没有未合并的内容\n'
 						} else {
 							for (var k in cb[c]) {
-								htm += gitweb_commit(cb[c][k][0], cb[c][k][2], hash2br) + '\n'
+								htm += gitweb_commit(cb[c][k], hash2br) + '\n'
 							}
 							//htm += cb[c] + '\n'
 						}
@@ -248,7 +248,7 @@ function gitweb_branch(branch, port)
 	return ac
 }
 
-function gitweb_commit(commit_id, show, hash2br)
+function gitweb_commit(ci_info, hash2br)
 {
 	// http://172.16.10.48:8598/?p=.git;a=commit;h=ac23adab42ab40dd0afaa89f426115b85991c701
 	// very ugly.....
@@ -256,13 +256,19 @@ function gitweb_commit(commit_id, show, hash2br)
 	port = port.responseText
 	htm = ''
 
+	ci_id = ci_info[0]
+	ci_date = ci_info[2]
+	ci_author = ci_info[3]
+	ci_cm = ci_info[4]
 
-	href = "http://172.16.10.48:"+port+"/?p=.git;a=commit;h=" + commit_id
-	ac = '<a href="' + href  + '">' + commit_id + ' ' + show + '</a>'
+	ci_show = ci_id + ' ' + ci_date + ' ' + ci_author + ' ' + ci_cm
+
+	href = "http://172.16.10.48:"+port+"/?p=.git;a=commit;h=" + ci_id
+	ac = '<a href="' + href  + '">' + ci_show + ' ' + '</a>'
 	htm += ac
 
-	if (hash2br.hasOwnProperty(commit_id)) {
-		brs = hash2br[commit_id]
+	if (hash2br.hasOwnProperty(ci_id)) {
+		brs = hash2br[ci_id]
 		for (b in brs) {
 			htm += gitweb_branch(brs[b], port)
 		}
@@ -274,7 +280,7 @@ function gitweb_commit(commit_id, show, hash2br)
 
 function base_br_show(br, heads, hash2br)
 {
-	ac = gitweb_commit(heads[br][0], heads[br][2], hash2br)
+	ac = gitweb_commit(heads[br], hash2br)
 
 	return '<h4>' + branch_show(br) + ' '+ ac + '</h4>'
 }
@@ -282,7 +288,7 @@ function base_br_show(br, heads, hash2br)
 function cmp_br_show(br, heads, hash2br)
 {
 
-    ac = gitweb_commit(heads[br][0], heads[br][2], hash2br)
+    ac = gitweb_commit(heads[br], hash2br)
 
 	return branch_show(br) + ' ' + ac
 }
@@ -389,7 +395,7 @@ function merge_stat_all(response, status, xhr)
 			htm += cmp_br_show(c, heads, hash2br) + '\n'
 			//htm += cb[c]
 			for (var k in cb[c]) {
-				htm += gitweb_commit(cb[c][k][0], cb[c][k][2], hash2br) + '\n'
+				htm += gitweb_commit(cb[c][k], hash2br) + '\n'
 			}
 
 			isnomerge = true
@@ -430,7 +436,7 @@ function merge_stat_all(response, status, xhr)
 			//htm += cb[c]
 
 			for (var k in cb[c]) {
-				htm += gitweb_commit(cb[c][k][0], cb[c][k][2], hash2br) + '\n'
+				htm += gitweb_commit(cb[c][k], hash2br) + '\n'
 			}
 
 			if (cb[c].length == 0) {

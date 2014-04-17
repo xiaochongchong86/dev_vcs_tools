@@ -145,13 +145,15 @@ class DevVcsTool:
         return rv
 
     def log_cmd_parse(self, cmd_argu):
-        pretty = '--date=raw --pretty=format:"%h %ad %ar %an %s"'
+        # log format split
+        spw = '@&*^;?@'
+        pretty = '--date=raw --pretty=format:"%%h%s%%ad%s%%ar%s%%an%s%%s"' % (spw, spw, spw, spw)
         cmd = 'git log %s %s' % (cmd_argu, pretty)
         logs = self.do_cmd_except(cmd)
         logs = logs.splitlines()
         logs = [e.strip() for e in logs]
-        logs = [e.split() for e in logs]
-        logs = [(e[0], int(e[1]), ' '.join(e[3:])) for e in logs]
+        logs = [e.split(spw) for e in logs]
+        logs = [(e[0], int(e[1].split()[0]), e[2], e[3], e[4]) for e in logs]
 
         return logs
 
