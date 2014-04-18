@@ -75,7 +75,7 @@ class Branch:
 
         user_br_path = user+'/'
 
-        if tp == 'dv' or tp == 'hf':
+        if tp == 'dv' or tp == 'hf' or tp == 'cqa':
             if user_br_path == br[:len(user_br_path)]:
                 privilege_check(auth.PRG_BR_CR_USER)
             else:
@@ -87,8 +87,9 @@ class Branch:
         else:
             privilege_check(auth.PRG_BR_CR_ROOT)
 
-    def DELETE(self, tp):
-        return traceback_wrapper(self.do_DELETE, tp)
+
+    #def DELETE(self, tp):
+    #    return traceback_wrapper(self.do_DELETE, tp)
 
 
     def do_DELETE(self, tp):
@@ -107,6 +108,10 @@ class Branch:
 
         elif tp == 'qa':
             res = DevVcsTool.except_wrapper(DevVcsTool.delete_solid_branch, 'qa/'+br)
+
+        elif tp == 'cqa':
+            res = DevVcsTool.except_wrapper(DevVcsTool.delete_solid_branch, 'conflict/qa/'+br)
+
 
         elif tp == 'hf':
             res = DevVcsTool.except_wrapper(DevVcsTool.delete_solid_branch, 'hotfix/'+br)
@@ -139,6 +144,10 @@ class Branch:
 
         elif tp == 'qa':
             res = DevVcsTool.except_wrapper(DevVcsTool.create_solid_branch, 'develop', 'qa/'+br)
+
+        elif tp == 'cqa':
+            res = DevVcsTool.except_wrapper(DevVcsTool.create_solid_branch, base_br, 'conflict/qa/'+br)
+
 
         elif tp == 'hf':
             res = DevVcsTool.except_wrapper(DevVcsTool.create_solid_branch, 'master', 'hotfix/'+br)

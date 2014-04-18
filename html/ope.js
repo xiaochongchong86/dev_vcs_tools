@@ -40,11 +40,13 @@ function button_click()
 	if (!(user === undefined)) {
 		$('#input_dv').val(user+'/')
 		$('#input_hf').val(user+'/')
+		$('#input_cqa').val(user+'/')
 	}
 
 
 	$("#btn_dv").click(create_br_closure('dv'))
 	$("#btn_qa").click(create_br_closure('qa'))
+	$("#btn_cqa").click(create_br_closure('cqa'))
 	$("#btn_hf").click(create_br_closure('hf'))
 	$("#btn_rl").click(create_br_closure('rl'))
 	$("#btn_dp").click(create_br_closure('dp'))
@@ -53,6 +55,7 @@ function button_click()
 	$("#btn_del_dv").click(delete_br_closure('dv'))
 	$("#btn_del_qa").click(delete_br_closure('qa'))
 	$("#btn_del_hf").click(delete_br_closure('hf'))
+	$("#btn_del_cqa").click(delete_br_closure('cqa'))
 
 
 	$("#btn_merge_qa").click(merge_br_closure('qa'))
