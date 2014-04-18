@@ -28,7 +28,10 @@ PRG_ROOT = 100
 
 class AuthGit:
 
-
+    # eg
+    #USER_LIST = {
+    #  user: (passwd, privilege)
+    #    }
 
     USER_LIST = userlist.USER_LIST
 
