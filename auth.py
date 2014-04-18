@@ -7,6 +7,8 @@ import json
 import traceback
 import hashlib
 
+import userlist
+
 # privilege
 # 0: 没有登陆
 # 1: dev|hotfix/user/* 创建分支 dev|hotfix/user/* 删除分支权限
@@ -28,11 +30,8 @@ class AuthGit:
 
 
 
-    USER_LIST = {
+    USER_LIST = userlist.USER_LIST
 
-        # user: (passwd, privilege)
-        'wangjian': ('123', 1),
-    }
 
     def login(self, u, p):
         user = self.USER_LIST.get(u, None)
