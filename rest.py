@@ -68,7 +68,7 @@ class Branch:
     def check_create_prg(self, tp, br):
         user = web.cookies().get('user')
         if user == None:
-            privilege_check(auth.PRG_BRANCH_CREATE_USER)
+            privilege_check(auth.PRG_BRANCH_CREATE_ANY)
 
         user_br_path = user+'/'
 

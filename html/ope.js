@@ -35,6 +35,13 @@ function readydo_ope()
 
 function button_click()
 {
+	user = $.cookie('user')
+	if (!(user === undefined)) {
+		$('#input_dv').val(user+'/')
+		$('#input_hf').val(user+'/')
+	}
+
+
 	$("#btn_dv").click(create_br_closure('dv'))
 	$("#btn_qa").click(create_br_closure('qa'))
 	$("#btn_hf").click(create_br_closure('hf'))
