@@ -49,6 +49,12 @@ function button_click()
 	$("#btn_rl").click(create_br_closure('rl'))
 	$("#btn_dp").click(create_br_closure('dp'))
 
+
+	$("#btn_del_dv").click(delete_br_closure('dv'))
+	$("#btn_del_qa").click(delete_br_closure('qa'))
+	$("#btn_del_hf").click(delete_br_closure('hf'))
+
+
 	$("#btn_merge_qa").click(merge_br_closure('qa'))
 	$("#btn_merge_dv").click(merge_br_closure('dv'));
 	$("#btn_merge_ms").click(merge_br_closure('ms'));
@@ -214,6 +220,24 @@ function create_br_closure(tp)
 
 		}
 }
+
+function delete_br_closure(tp)
+{
+	var input_base = "#input_base_" + tp
+	var input = "#input_" + tp
+	var div = '#div_res_' + tp
+
+	return function()
+		{
+			ib = $(input_base).val()
+			$(div).html('<pre>loading...</pre>')
+			br = $(input).val()
+			uri = "git/branch/" + tp
+			// use create_br_cb_closure is ok
+			$.post(uri, {m:'delete', base_br: ib, new_br: br}, create_br_cb_closure(div))
+		}
+}
+
 
 
 function err_show(obj)

@@ -84,12 +84,46 @@ class Branch:
         else:
             privilege_check(auth.PRG_ROOT)
 
+    def DELETE(self, tp):
+        return traceback_wrapper(self.do_DELETE, tp)
+
+
+    def do_DELETE(self, tp):
+        #print tp, br
+        usr_data = dict(web.input())
+
+        print usr_data
+        usr_data = dict(web.input())
+        base_br = usr_data['base_br']
+        br = usr_data['new_br']
+
+
+        self.check_create_prg(tp, br)
+        if tp == 'dv':
+            res = DevVcsTool.except_wrapper(DevVcsTool.delete_solid_branch, 'dev/'+br)
+
+        elif tp == 'qa':
+            res = DevVcsTool.except_wrapper(DevVcsTool.delete_solid_branch, 'qa/'+br)
+
+        elif tp == 'hf':
+            res = DevVcsTool.except_wrapper(DevVcsTool.delete_solid_branch, 'hotfix/'+br)
+
+
+        else:
+            res = {'code': 1, 'err': 'err type: '+tp}
+
+        return res
+
+
     def POST(self, tp):
         return traceback_wrapper(self.do_POST, tp)
 
     def do_POST(self, tp):
         #print tp, br
         usr_data = dict(web.input())
+        if usr_data.get('m', '') == 'delete':
+            return self.do_DELETE(tp)
+
 
         usr_data = dict(web.input())
         base_br = usr_data['base_br']

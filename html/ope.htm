@@ -31,20 +31,25 @@
 <p>base branch: <input id="input_base_dv" value="develop" type="text" name="branch"></p>
 <p>dev/<input id="input_dv" type="text" name="branch"></p>
 <button id="btn_dv" type="button">create</button>
+<button id="btn_del_dv" type="button">delete</button>
 <div id="div_res_dv"></div>
+
+
+<h3>创建紧急修正(hotfix/*)基于master创建</h3>
+<p>base branch: <input id="input_base_hf" value="master" type="text" name="branch" readonly="readonly"></p>
+<p>hotfix/<input id="input_hf" type="text" name="branch"></p>
+<button id="btn_hf" type="button">create</button>
+<button id="btn_del_hf" type="button">delete</button>
+<div id="div_res_hf"></div>
 
 
 <h3>创建测试(qa/*)分支基于develop创建</h3>
 <p>base branch: <input id="input_base_qa" value="develop" type="text" name="branch"></p>
 <p>qa/<input id="input_qa" type="text" name="branch"></p>
 <button id="btn_qa" type="button">create</button>
+<button id="btn_del_qa" type="button">delete</button>
 <div id="div_res_qa"></div>
 
-<h3>创建紧急修正(hotfix/*)基于master创建</h3>
-<p>base branch: <input id="input_base_hf" value="master" type="text" name="branch" readonly="readonly"></p>
-<p>hotfix/<input id="input_hf" type="text" name="branch"></p>
-<button id="btn_hf" type="button">create</button>
-<div id="div_res_hf"></div>
 
 <!--
 <h3>创建release分支(release/*)基于develop创建</h3>

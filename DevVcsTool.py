@@ -322,6 +322,11 @@ def create_solid_branch(base, branch, is_forth_push = False):
     return dvt.create_solid_branch(base, branch, is_forth_push)
 
 
+def delete_solid_branch(branch):
+    dvt = DevVcsTool('origin')
+    return dvt.del_remote_branch(branch)
+
+
 
 def collect_stat(dev_stat, res_cmp):
     base_stat = {}
