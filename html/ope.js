@@ -7,7 +7,8 @@ function login_label()
 		 $("#div_login_label").html('<a href="login">登陆</a>')
 
 	 } else {
-		 $("#div_login_label").html('<a href="login">'+obj.res+'</a>')
+		 btn = '<input type="button" onclick="login_out()" value="Logout"/>'
+		 $("#div_login_label").html('<a href="login">'+obj.res+'</a>' + btn)
 	 }
 
 
@@ -636,4 +637,12 @@ function login_check(form)
 		   login_res
 		   )
 
+}
+
+function login_out()
+{
+	$.removeCookie('user', {path: '/'})
+    $.removeCookie('passwd', {path: '/'})
+
+	location = "/"
 }
