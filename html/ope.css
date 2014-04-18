@@ -7,3 +7,10 @@
 	background-color: #ffaaff;
 	border-color: #ffccff #ff00ee #ff00ee #ffccff;
 }
+
+
+.topcorner{
+   position:absolute;
+   top:0;
+   right:0;
+}

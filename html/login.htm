@@ -20,14 +20,18 @@
 <script type="text/javascript" src="ope.js"></script>
 <link rel="stylesheet" href="ope.css">
 
-<script>$(document).ready(readydo_info)</script>
+<center>
+<form name="login">
 
-</head>
+  <p>User: <input name="user" type="text"/></p>
+  <p>Password: <input name="passwd" type="password"/></p>
 
-<body>
-<div id="div_login_label" class="topcorner"></div>
-<div id="div1">loading......</div>
+  <input type="button" onclick="login_check(this.form)" value="Login"/>
 
+</form>
+
+<div id="div_login"></div>
+</center>
 
 </body>
 </html>

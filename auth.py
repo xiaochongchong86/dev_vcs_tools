@@ -34,6 +34,42 @@ class AuthGit:
         'wangjian': ('123', 1),
     }
 
+    def login(self, u, p):
+        user = self.USER_LIST.get(u, None)
+        if user == None:
+            return False
+
+        passwd = hashlib.sha1(user[0]).hexdigest()
+        if passwd != hashlib.sha1(p).hexdigest():
+            return False
+
+
+        web.setcookie('user', u, 3600*7)
+        web.setcookie('passwd', passwd, 3600*7)
+
+        return True
+
+    def clear_cookie(self):
+        web.setcookie('user', '', -1)
+        web.setcookie('passwd', '', -1)
+
+
+    def pricheck(self, u, p):
+        user = self.USER_LIST.get(u, None)
+        if user == None:
+            self.clear_cookie()
+            return False
+
+        passwd = hashlib.sha1(user[0]).hexdigest()
+        if passwd != p:
+            self.clear_cookie()
+
+
+            return False
+
+
+        return True
+
 
     def privilege(self):
         #print web.cookies().get('user')
@@ -51,7 +87,14 @@ class AuthGit:
         else:
             return 0
 
-        
+def login(u, p):
+    au = AuthGit()
+    return au.login(u, p)
+
+def pricheck(u, p):
+    au = AuthGit()
+    return au.pricheck(u, p)
+
 
 def privilege(need_pri):
     au = AuthGit()

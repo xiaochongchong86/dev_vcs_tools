@@ -1,13 +1,34 @@
+function login_label()
+{
+	var data = $.ajax({url:"git/pricheck", type:"POST", async:false})
+	var obj = eval('(' + data.responseText + ')')
+
+	 if (obj.code != 0) {
+		 $("#div_login_label").html('<a href="login">登陆</a>')
+
+	 } else {
+		 $("#div_login_label").html('<a href="login">'+obj.res+'</a>')
+	 }
+
+
+}
+
 function readydo_info()
 {
+	login_label()
 	init_show()
+}
+
+function readydo_index()
+{
+	//login_label()
 }
 
 
 function readydo_ope()
 {
 	//init_show()
-
+	login_label()
 	button_click()
 
 }
@@ -572,5 +593,40 @@ function merge_stat(response, status, xhr, id)
 
 function init_get(data, status)
 {
+
+}
+
+
+
+function login_res(data, status)
+{
+
+
+	var obj = eval('(' + data + ')')
+
+	var htm = ''
+	if (obj.code != 0) {
+		htm = '<font color="red">' + obj.err + '</font>'
+		$("#div_login").html(htm)
+	} else {
+
+		//$("#div_login").html('<pre>ok</pre>')
+		location = "/"
+	}
+
+}
+
+function login_check(form)
+{
+
+	var u = form.user.value
+	var p = form.passwd.value
+
+	uri = "git/login"
+	$.post(
+		   uri,
+		   {user: u, passwd: p},
+		   login_res
+		   )
 
 }

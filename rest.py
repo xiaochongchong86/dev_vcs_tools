@@ -11,6 +11,8 @@ import auth
 
 urls = (
     '/git', 'test',
+    '/git/login', 'Login',
+    '/git/pricheck', 'PriCheck',
     '/git/stat/merge', 'MergeStat',
     '/git/branch/(.*)', 'Branch',
     '/git/merge/(.*)', 'MergeBranch',
@@ -65,6 +67,9 @@ class MergeStat:
 class Branch:
     def check_create_prg(self, tp, br):
         user = web.cookies().get('user')
+        if user == None:
+            privilege_check(auth.PRG_BRANCH_CREATE_USER)
+
         user_br_path = user+'/'
 
         if tp == 'dv' or tp == 'hf':
@@ -117,7 +122,6 @@ class Branch:
 
 class MergeBranch:
     def check_create_prg(self, tp):
-        user = web.cookies().get('user')
 
         if tp == 'qa':
             privilege_check(auth.PRG_BRANCH_QA)
@@ -218,6 +222,39 @@ class MergeCheck:
             res = {'code': 1, 'err': 'err type: '+tp}
 
         return res
+
+class Login:
+    def POST(self):
+        return traceback_wrapper(self.do_POST)
+
+
+    def do_POST(self):
+        usr_data = dict(web.input())
+        user = usr_data['user']
+        passwd = usr_data['passwd']
+
+        if auth.login(user, passwd):
+            return  {'code': 0, 'res': 'ok'}
+
+        else:
+            return  {'code': 1, 'err': 'err passwd'}
+
+
+class PriCheck:
+    def POST(self):
+        return traceback_wrapper(self.do_POST)
+
+
+    def do_POST(self):
+        user = web.cookies().get('user')
+        passwd = web.cookies().get('passwd')
+
+
+        if auth.pricheck(user, passwd):
+            return  {'code': 0, 'res': user}
+
+        else:
+            return  {'code': 1, 'err': 'invalid token'}
 
 
 
