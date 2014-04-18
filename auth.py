@@ -17,20 +17,37 @@ import userlist
 # 4: develop 分支合并权限 
 # 5: hotfix, master 合并，打tag权限
 
-PRG_GUEST = 0
-PRG_BRANCH_CREATE_USER = 1
-PRG_BRANCH_CREATE_ANY = 2
-PRG_BRANCH_QA = 3
-PRG_BRANCH_DEVELOP = 4
-PRG_BRANCH_MASTER = 5
+# 创建分支权限
+# 没有登陆
+PRG_BR_CR_GUEST = 0
+# dev|hotfix/user/* 创建分支 dev|hotfix/user/* 删除分支权限
+PRG_BR_CR_USER = 1
+# dev|hotfix/* 创建分支 dev|hotfix/* 删除分支权限
+PRG_BR_CR_ANY = 2
+# qa/*分支创建权限
+PRG_BR_CR_QA = 3
+# admin
+PRG_BR_CR_ROOT = 100
 
-PRG_ROOT = 100
+# 合并分支权限
+# 没有登陆
+PRG_BR_MG_GUEST = 0
+# qa/* 分支合并权限
+PRG_BR_MG_QA = 1
+# develop 分支合并权限
+PRG_BR_MG_DEVELOP = 2
+# hotfix, master 合并，打tag权限
+PRG_BR_MG_MASTER = 3
+# admin
+PRG_BR_MG_ROOT = 100
+
+PRG_GUEST = [PRG_BR_CR_GUEST, PRG_BR_MG_GUEST]
 
 class AuthGit:
 
     # eg
     #USER_LIST = {
-    #  user: (passwd, privilege)
+    #  user: (passwd, 创建分支权限, 合并分支权限)
     #    }
 
     USER_LIST = userlist.USER_LIST
@@ -80,14 +97,14 @@ class AuthGit:
         user = self.USER_LIST.get(web.cookies().get('user'), None)
 
         if user == None:
-            return 0
+            return PRG_GUEST
 
         passwd = user[0]
         #print passwd
         if passwd == web.cookies().get('passwd'):
-            return user[1]
+            return user[1:]
         else:
-            return 0
+            return PRG_GUEST
 
 def login(u, p):
     au = AuthGit()
@@ -101,7 +118,7 @@ def pricheck(u, p):
 def privilege(need_pri):
     au = AuthGit()
     p = au.privilege()
-    return p >= need_pri, p
+    return p[0] >= need_pri[0] and p[1] >= need_pri[1], p
 
 
 if __name__ == "__main__":

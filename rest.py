@@ -29,11 +29,14 @@ class PrivilegeError(Exception):
         self.now_p = now_p
 
     def __str__(self):
-        return 'your privilege is not enough, need larger than %s, but now is %s' % (self.need_p, self.now_p)
+        return 'your privilege is not enough, need larger than %s.%s, but now is %s.%s' % (self.need_p[0],
+                                                                                           self.need_p[1],
+                                                                                           self.now_p[0],
+                                                                                           self.now_p[1])
 
 
-
-def privilege_check(need_p):
+def privilege_check(cr = auth.PRG_BR_CR_GUEST, mg = auth.PRG_BR_MG_GUEST):
+    need_p = [cr, mg]
     ep, now_p = auth.privilege(need_p)
     if not ep:
         raise PrivilegeError(need_p, now_p)
@@ -60,7 +63,7 @@ class MergeStat:
         return traceback_wrapper(self.do_GET)
 
     def do_GET(self):
-        privilege_check(auth.PRG_GUEST)
+        privilege_check()
         return DevVcsTool.except_wrapper(DevVcsTool.all_merge_stat)
 
 
@@ -68,21 +71,21 @@ class Branch:
     def check_create_prg(self, tp, br):
         user = web.cookies().get('user')
         if user == None:
-            privilege_check(auth.PRG_BRANCH_CREATE_ANY)
+            privilege_check(auth.PRG_BR_CR_ANY)
 
         user_br_path = user+'/'
 
         if tp == 'dv' or tp == 'hf':
             if user_br_path == br[:len(user_br_path)]:
-                privilege_check(auth.PRG_BRANCH_CREATE_USER)
+                privilege_check(auth.PRG_BR_CR_USER)
             else:
-                privilege_check(auth.PRG_BRANCH_CREATE_ANY)
+                privilege_check(auth.PRG_BR_CR_ANY)
 
         elif tp == 'qa':
-            privilege_check(auth.PRG_BRANCH_QA)
+            privilege_check(auth.PRG_BR_CR_QA)
 
         else:
-            privilege_check(auth.PRG_ROOT)
+            privilege_check(auth.PRG_BR_CR_ROOT)
 
     def DELETE(self, tp):
         return traceback_wrapper(self.do_DELETE, tp)
@@ -158,16 +161,16 @@ class MergeBranch:
     def check_create_prg(self, tp):
 
         if tp == 'qa':
-            privilege_check(auth.PRG_BRANCH_QA)
+            privilege_check(auth.PRG_BR_CR_GUEST, auth.PRG_BR_MG_QA)
 
         elif tp == 'dv':
-            privilege_check(auth.PRG_BRANCH_DEVELOP)
+            privilege_check(auth.PRG_BR_CR_GUEST, auth.PRG_BR_MG_DEVELOP)
 
         elif tp == 'hf' or tp == 'ms' or tp == 'ms2':
-            privilege_check(auth.PRG_BRANCH_MASTER)
+            privilege_check(auth.PRG_BR_CR_GUEST, auth.PRG_BR_MG_MASTER)
 
         else:
-            privilege_check(auth.PRG_ROOT)
+            privilege_check(auth.PRG_BR_CR_GUEST, auth.PRG_BR_MG_ROOT)
 
 
     def POST(self, tp):
@@ -224,7 +227,7 @@ class MergeCheck:
 
         usr_data = dict(web.input())
         #print usr_data
-        privilege_check(auth.PRG_GUEST)
+        privilege_check()
 
         base_br = usr_data['base_br']
         merge_list = usr_data['merge_list']
