@@ -314,6 +314,8 @@ function gitweb_commit(ci_info, hash2br)
 	// very ugly.....
 	port = $.ajax({url:"gitweb/port", async:false})
 	port = port.responseText
+	var port = eval('(' + port + ')')
+	port = port[0]
 	htm = ''
 
 	ci_id = ci_info[0]
