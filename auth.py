@@ -41,7 +41,7 @@ class AuthGit:
         if user == None:
             return False
 
-        passwd = hashlib.sha1(user[0]).hexdigest()
+        passwd = user[0]
         if passwd != hashlib.sha1(p).hexdigest():
             return False
 
@@ -62,7 +62,7 @@ class AuthGit:
             self.clear_cookie()
             return False
 
-        passwd = hashlib.sha1(user[0]).hexdigest()
+        passwd = user[0]
         if passwd != p:
             self.clear_cookie()
 
@@ -82,7 +82,7 @@ class AuthGit:
         if user == None:
             return 0
 
-        passwd = hashlib.sha1(user[0]).hexdigest()
+        passwd = user[0]
         #print passwd
         if passwd == web.cookies().get('passwd'):
             return user[1]
