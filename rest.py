@@ -143,7 +143,7 @@ class Branch:
             res = DevVcsTool.except_wrapper(DevVcsTool.create_solid_branch, base_br, 'dev/'+br)
 
         elif tp == 'qa':
-            res = DevVcsTool.except_wrapper(DevVcsTool.create_solid_branch, 'develop', 'qa/'+br)
+            res = DevVcsTool.except_wrapper(DevVcsTool.create_solid_branch, base_br, 'qa/'+br)
 
         elif tp == 'cqa':
             res = DevVcsTool.except_wrapper(DevVcsTool.create_solid_branch, base_br, 'conflict/qa/'+br)
