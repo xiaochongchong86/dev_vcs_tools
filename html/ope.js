@@ -395,6 +395,8 @@ function merge_stat_all(response, status, xhr)
     var nomerge_dep_stat = obj.nomerge_dep_stat
 	var nomerge_master_dev_stat = obj.nomerge_master_dev_stat
 	var nomerge_develop_qa_stat = obj.nomerge_develop_qa_stat
+	var nomerge_master_hotfix_stat = obj.nomerge_master_hotfix_stat
+	var nomerge_develop_hotfix_stat = obj.nomerge_develop_hotfix_stat
 	var heads = obj.heads
 	var tags = obj.tags
 	var old_branch = obj.old_branch
@@ -468,6 +470,68 @@ function merge_stat_all(response, status, xhr)
 		htm += '</pre>'
 
 	}
+
+
+	htm += '<h3>master和hotfix/*合并统计</h3>'
+	htm += '<hr/>'
+	for (var e in nomerge_master_hotfix_stat) {
+		var cb = nomerge_master_hotfix_stat[e]
+		htm += base_br_show(e, heads, hash2br)
+
+
+		htm += '<pre>'
+		for (var c in cb) {
+			//htm += '[' + c + ']\n'
+			htm += cmp_br_show(c, heads, hash2br) + '\n'
+			//htm += cb[c]
+
+			for (var k in cb[c]) {
+				htm += gitweb_commit(cb[c][k], hash2br) + '\n'
+			}
+
+			if (cb[c].length == 0) {
+				htm += '没有未合并的内容\n'
+			}
+
+
+		}
+
+		htm += '</pre>'
+
+	}
+
+
+	htm += '<h3>develop和hotfix/*合并统计</h3>'
+	htm += '<hr/>'
+	for (var e in nomerge_develop_hotfix_stat) {
+		var cb = nomerge_develop_hotfix_stat[e]
+		htm += base_br_show(e, heads, hash2br)
+
+
+		htm += '<pre>'
+		for (var c in cb) {
+			//htm += '[' + c + ']\n'
+			htm += cmp_br_show(c, heads, hash2br) + '\n'
+			//htm += cb[c]
+
+			for (var k in cb[c]) {
+				htm += gitweb_commit(cb[c][k], hash2br) + '\n'
+			}
+
+			if (cb[c].length == 0) {
+				htm += '没有未合并的内容\n'
+			}
+
+
+		}
+
+		htm += '</pre>'
+
+	}
+
+
+
+
 
 
 	htm += '<h3>develop已经并入的开发分支</h3>'

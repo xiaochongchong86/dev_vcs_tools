@@ -388,6 +388,10 @@ def all_merge_stat():
 
     # 检查develop和qa的对比
     res_nomerge_develop_qa = dvt.cmp_pref_branch_pref_branch('develop', 'qa/*', 'no_merges')
+
+    res_nomerge_master_hotfix = dvt.cmp_pref_branch_pref_branch('master', 'hotfix/*', '')
+    res_nomerge_develop_hotfix = dvt.cmp_pref_branch_pref_branch('develop', 'hotfix/*', 'no_merges')
+
     # 检查develop的功能有多少没有进入release
     res_nomerge_dev = dvt.cmp_pref_branch_pref_branch('release/*', 'develop', '')
 
@@ -437,6 +441,8 @@ def all_merge_stat():
     nomerge_master_dev_stat = collect_nomerge_stat(res_nomerge_master_dev)
     # 保留了没有区别的branch key
     nomerge_develop_qa_stat =  res_nomerge_develop_qa
+    nomerge_master_hotfix_stat =  res_nomerge_master_hotfix
+    nomerge_develop_hotfix_stat =  res_nomerge_develop_hotfix
     #print res_nomerge_develop_qa
     #print nomerge_develop_qa_stat
     #print dev_stat
@@ -449,6 +455,8 @@ def all_merge_stat():
              'nomerge_dep_stat': nomerge_dep_stat,
              'nomerge_master_dev_stat': nomerge_master_dev_stat,
              'nomerge_develop_qa_stat': nomerge_develop_qa_stat,
+             'nomerge_master_hotfix_stat': nomerge_master_hotfix_stat,
+             'nomerge_develop_hotfix_stat': nomerge_develop_hotfix_stat,
              'heads': all_heads,
 
              'tags': dvt.recent_tag(10),
