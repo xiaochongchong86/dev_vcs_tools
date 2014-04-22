@@ -7,6 +7,7 @@ import json
 import traceback
 import DevVcsTool
 import auth
+from UsrException import *
 
 
 urls = (
@@ -23,18 +24,6 @@ urls = (
 app = web.application(urls, globals())
 
 
-class PrivilegeError(Exception):
-    def __init__(self, need_p, now_p):
-        self.need_p = need_p
-        self.now_p = now_p
-
-    def __str__(self):
-        return 'your privilege is not enough, need larger than %s.%s, but now is %s.%s' % (self.need_p[0],
-                                                                                           self.need_p[1],
-                                                                                           self.now_p[0],
-                                                                                           self.now_p[1])
-
-
 def privilege_check(cr = auth.PRG_BR_CR_GUEST, mg = auth.PRG_BR_MG_GUEST):
     need_p = [cr, mg]
     ep, now_p = auth.privilege(need_p)
@@ -42,20 +31,6 @@ def privilege_check(cr = auth.PRG_BR_CR_GUEST, mg = auth.PRG_BR_MG_GUEST):
         raise PrivilegeError(need_p, now_p)
 
 
-def traceback_wrapper(fun, *args, **kwds):
-    try:
-        res = fun(*args, **kwds)
-
-
-    except PrivilegeError as e:
-        res = {'code': 2, 'err': str(e)}
-
-    except:
-        traceback.print_exc()
-        res = { 'code': 3, 'err': traceback.format_exc() }
-
-
-    return json.dumps(res)
 
 
 class MergeStat:
@@ -64,7 +39,7 @@ class MergeStat:
 
     def do_GET(self):
         privilege_check()
-        return DevVcsTool.except_wrapper(DevVcsTool.all_merge_stat)
+        return DevVcsTool.all_merge_stat()
 
 
 class Branch:
@@ -104,21 +79,21 @@ class Branch:
 
         self.check_create_prg(tp, br)
         if tp == 'dv':
-            res = DevVcsTool.except_wrapper(DevVcsTool.delete_solid_branch, 'dev/'+br)
+            res = DevVcsTool.delete_solid_branch('dev/'+br)
 
         elif tp == 'qa':
-            res = DevVcsTool.except_wrapper(DevVcsTool.delete_solid_branch, 'qa/'+br)
+            res = DevVcsTool.delete_solid_branch('qa/'+br)
 
         elif tp == 'cqa':
-            res = DevVcsTool.except_wrapper(DevVcsTool.delete_solid_branch, 'conflict/qa/'+br)
+            res = DevVcsTool.delete_solid_branch('conflict/qa/'+br)
 
 
         elif tp == 'hf':
-            res = DevVcsTool.except_wrapper(DevVcsTool.delete_solid_branch, 'hotfix/'+br)
+            res = DevVcsTool.delete_solid_branch('hotfix/'+br)
 
 
         else:
-            res = {'code': 1, 'err': 'err type: '+tp}
+            raise OtherError('err type: '+tp)
 
         return res
 
@@ -140,28 +115,28 @@ class Branch:
 
         self.check_create_prg(tp, br)
         if tp == 'dv':
-            res = DevVcsTool.except_wrapper(DevVcsTool.create_solid_branch, base_br, 'dev/'+br)
+            res = DevVcsTool.create_solid_branch(base_br, 'dev/'+br)
 
         elif tp == 'qa':
-            res = DevVcsTool.except_wrapper(DevVcsTool.create_solid_branch, base_br, 'qa/'+br)
+            res = DevVcsTool.create_solid_branch(base_br, 'qa/'+br)
 
         elif tp == 'cqa':
-            res = DevVcsTool.except_wrapper(DevVcsTool.create_solid_branch, base_br, 'conflict/qa/'+br)
+            res = DevVcsTool.create_solid_branch(base_br, 'conflict/qa/'+br)
 
 
         elif tp == 'hf':
-            res = DevVcsTool.except_wrapper(DevVcsTool.create_solid_branch, 'master', 'hotfix/'+br)
+            res = DevVcsTool.create_solid_branch('master', 'hotfix/'+br)
 
         #elif tp == 'rl':
-        #    res = DevVcsTool.except_wrapper(DevVcsTool.create_solid_branch, 'develop', 'release/version-'+br)
+        #    res = traceback_wrapper(DevVcsTool.create_solid_branch, 'develop', 'release/version-'+br)
 
 
         #elif tp == 'dp':
-        #    res = DevVcsTool.except_wrapper(DevVcsTool.create_solid_branch, 'release/version-'+br, 'develop', True)
+        #    res = traceback_wrapper(DevVcsTool.create_solid_branch, 'release/version-'+br, 'develop', True)
 
 
         else:
-            res = {'code': 1, 'err': 'err type: '+tp}
+            raise OtherError('err type: '+tp)
 
         return res
 
@@ -203,26 +178,26 @@ class MergeBranch:
         self.check_create_prg(tp)
 
         if tp == 'dv':
-            res = DevVcsTool.except_wrapper(DevVcsTool.merge_branch, 'develop', merge_list, merge_info, '')
+            res = DevVcsTool.merge_branch('develop', merge_list, merge_info, '')
 
         elif tp == 'qa':
-            res = DevVcsTool.except_wrapper(DevVcsTool.merge_branch, 'qa/'+base_br, merge_list, merge_info, '')
+            res = DevVcsTool.merge_branch('qa/'+base_br, merge_list, merge_info, '')
 
 
         elif tp == 'hf':
             merge_br = 'hotfix/'+usr_data['merge_list']
-            res = DevVcsTool.except_wrapper(DevVcsTool.merge_hotfix_branch, [merge_br, ], merge_info, merge_tag)
+            res = DevVcsTool.merge_hotfix_branch([merge_br, ], merge_info, merge_tag)
 
         elif tp == 'ms':
             merge_br = 'release/version-'+usr_data['merge_list']
-            res = DevVcsTool.except_wrapper(DevVcsTool.merge_branch, 'master', [merge_br, ], merge_info, merge_tag)
+            res = DevVcsTool.merge_branch('master', [merge_br, ], merge_info, merge_tag)
 
         elif tp == 'ms2':
-            res = DevVcsTool.except_wrapper(DevVcsTool.merge_branch, 'master', ['develop', ], merge_info, merge_tag)
+            res = DevVcsTool.merge_branch('master', ['develop', ], merge_info, merge_tag)
 
 
         else:
-            res = {'code': 1, 'err': 'err type: '+tp}
+            raise OtherError('err type: '+tp)
 
         return res
 
@@ -247,25 +222,25 @@ class MergeCheck:
 
 
         if tp == 'dv':
-            res = DevVcsTool.except_wrapper(DevVcsTool.check_merge_branch, 'develop', merge_list)
+            res = DevVcsTool.check_merge_branch('develop', merge_list)
 
         elif tp == 'qa':
-            res = DevVcsTool.except_wrapper(DevVcsTool.check_merge_branch, 'qa/'+base_br, merge_list)
+            res = DevVcsTool.check_merge_branch('qa/'+base_br, merge_list)
 
         elif tp == 'hf':
             merge_br = 'hotfix/'+usr_data['merge_list']
-            res = DevVcsTool.except_wrapper(DevVcsTool.check_merge_branch, base_br, [merge_br, ])
+            res = DevVcsTool.check_merge_branch(base_br, [merge_br, ])
 
         elif tp == 'ms':
             merge_br = 'release/version-'+usr_data['merge_list']
-            res = DevVcsTool.except_wrapper(DevVcsTool.check_merge_branch, 'master', [merge_br, ])
+            res = DevVcsTool.check_merge_branch('master', [merge_br, ])
 
         elif tp == 'ms2':
-            res = DevVcsTool.except_wrapper(DevVcsTool.check_merge_branch, 'master', ['develop', ])
+            res = DevVcsTool.check_merge_branch('master', ['develop', ])
 
 
         else:
-            res = {'code': 1, 'err': 'err type: '+tp}
+            raise OtherError('err type: '+tp)
 
         return res
 
@@ -280,10 +255,10 @@ class Login:
         passwd = usr_data['passwd']
 
         if auth.login(user, passwd):
-            return  {'code': 0, 'res': 'ok'}
+            return 'ok'
 
         else:
-            return  {'code': 1, 'err': 'err passwd'}
+            raise OtherError('err passwd')
 
 
 class PriCheck:
@@ -297,10 +272,10 @@ class PriCheck:
 
 
         if auth.pricheck(user, passwd):
-            return  {'code': 0, 'res': user}
+            return  user
 
         else:
-            return  {'code': 1, 'err': 'invalid token'}
+            raise OtherError('invalid token')
 
 
 

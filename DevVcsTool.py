@@ -6,18 +6,7 @@ import traceback
 import uuid
 import datetime
 import time
-
-class ShellCmdError(Exception):
-    def __init__(self, cmd, code, err):
-        self.cmd = cmd
-        self.code = code
-        self.err = err
-
-    def __str__(self):
-        return 'Do shell:[%s] code:%d err:\n%s' % (self.cmd, self.code, self.err)
-
-    def info(self):
-        return {'cmd': self.cmd, 'code': self.code, 'err': self.err }
+from UsrException import ShellCmdError
 
 
 
@@ -291,12 +280,6 @@ class DevVcsTool:
 
 # =======================================
 
-def except_wrapper(fun, *args, **kwds):
-    try:
-        res = fun(*args, **kwds)
-        return {'code': 0, 'res': res}
-    except ShellCmdError as e:
-        return e.info()
 
 def all_remote_branch_head():
     dvt = DevVcsTool('origin')
