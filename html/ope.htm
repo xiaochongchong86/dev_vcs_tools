@@ -27,6 +27,17 @@
 
 <div id="div_login_label" class="topcorner"></div>
 
+<ul class="nav nav-tabs" id="myTab">
+      <li class="active"><a href="#branch_create_del" data-toggle="tab">分支创建删除</a></li>
+      <li><a href="#branch_merge" data-toggle="tab">分支合并集成</a></li>
+      <li><a href="#branch_online" data-toggle="tab">上线</a></li>
+</ul>
+
+<div class="tab-content">
+
+
+<div class="tab-pane active" id="branch_create_del">
+
 <h3>创建开发(dev/*)分支默认基于develop创建</h3>
 <p>base branch: <input id="input_base_dv" value="develop" type="text" name="branch"></p>
 <p>dev/<input id="input_dv" type="text" name="branch"></p>
@@ -58,6 +69,7 @@
 <div id="div_res_qa"></div>
 
 
+</div>
 
 
 <!--
@@ -67,11 +79,16 @@
 <div id="div_res_rl"></div>
 
 
+
+
 <h3>修改预发布(deploy)分支指向基于release/version-*创建</h3>
 <p>deploy>>release/version-<input id="input_dp" type="text" name="branch"></p>
 <button id="btn_dp" type="button">change</button>
 <div id="div_res_dp"></div>
 -->
+
+
+<div class="tab-pane" id="branch_merge">
 
 
 <h3>集成开发分支到合并到测试分支</h3>
@@ -90,6 +107,7 @@
 <button id="btn_merge_dv" type="button">merge</button>
 <div id="div_res_merge_dv"></div>
 
+</div>
 <!--
 <h3>上线(master)合并release/version-*分支</h3>
 <p>base branch: <input id="input_merge_ms" value="master" type="text" name="branch" readonly="readonly"></p>
@@ -99,6 +117,8 @@
 <div id="div_res_merge_ms"></div>
 -->
 
+
+<div class="tab-pane" id="branch_online">
 
 <h3>上线(master)从develop分支合并</h3>
 <p>base branch: <input id="input_merge_ms2" value="master" type="text" name="branch" readonly="readonly"></p>
@@ -119,6 +139,11 @@
 <button id="btn_merge_hf" type="button">merge</button>
 <div id="div_res_merge_hf"></div>
 
+</div>
+
+
+
+</div>
 
 
 </body>
