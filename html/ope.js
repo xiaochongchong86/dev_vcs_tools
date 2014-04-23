@@ -494,6 +494,7 @@ function merge_stat_all(response, status, xhr)
 		var cb = cmp_dev[e]
 		htm += base_br_show(e, heads, hash2br)
 		htm += '<pre>'
+		cb.sort()
 		for (var i = 0; i < cb.length; i++) {
 			htm += cmp_br_show(cb[i], heads, hash2br) + '\n'
 			//htm += branch_show(cb[i]) + ' ' + heads[cb[i]] + '\n'
@@ -608,6 +609,7 @@ function merge_stat_all(response, status, xhr)
 		var cb = cmp_qa[e]
 		htm += base_br_show(e, heads, hash2br)
 		htm += '<pre>'
+		cb.sort()
 		for (var i = 0; i < cb.length; i++) {
 			htm += cmp_br_show(cb[i], heads, hash2br) + '\n'
 			//htm += branch_show(cb[i]) + ' ' + heads[cb[i]] + '\n'
@@ -625,6 +627,7 @@ function merge_stat_all(response, status, xhr)
 	for (var e in cmp_dev) {
 		var cb = cmp_dev[e]
 		htm += '<pre>'
+		cb.sort()
 		for (var i = 0; i < cb.length; i++) {
 			htm += cmp_br_show(cb[i], heads, hash2br) + '\n'
 			//htm += branch_show(cb[i]) + ' ' + heads[cb[i]] + '\n'
@@ -634,6 +637,7 @@ function merge_stat_all(response, status, xhr)
 
 	htm += '<h3>没有合并入develop，但是超过7天没有提交的开发分支(dev/*)，应该可以删除</h3>'
 	htm += '<pre>'
+	old_branch.sort()
 	for (var e in old_branch) {
 		htm += cmp_br_show(old_branch[e], heads, hash2br) + '\n'
 	}
