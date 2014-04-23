@@ -649,7 +649,14 @@ function merge_stat_all(response, status, xhr)
 	htm += '<h3>当前开发分支合并状态</h3>'
 	htm += '<hr/>'
 
+	var dev_brs = new Array()
 	for (var e in dev_stat) {
+		dev_brs.push(e);
+    }
+	dev_brs.sort()
+
+	for (var i in dev_brs) {
+		e = dev_brs[i]
 		var cb = dev_stat[e]
 		htm += base_br_show(e, heads, hash2br)
 		htm += '<pre>'
