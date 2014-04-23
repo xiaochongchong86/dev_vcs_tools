@@ -404,6 +404,20 @@ function merge_stat_all(response, status, xhr)
 	var hash2br = hash_to_branch(heads)
 
 
+	htm += '<ul class="nav nav-tabs" id="myTab">'
+	htm += '<li class="active"><a href="#tab_stat_tags" data-toggle="tab">tag信息</a></li>'
+	htm += '<li><a href="#tab_stat_master_develop" data-toggle="tab">待上线</a></li>'
+	htm += '<li><a href="#tab_stat_hotfix" data-toggle="tab">hotfix</a></li>'
+	htm += '<li><a href="#tab_stat_qa" data-toggle="tab">qa合并统计</a></li>'
+
+	htm += '<li><a href="#tab_stat_del" data-toggle="tab">待删除统计</a></li>'
+	htm += '<li><a href="#tab_stat_dev" data-toggle="tab">开发分支合并状态</a></li>'
+	htm += '</ul>'
+
+	htm += '<div class="tab-content">'
+
+
+	htm += '<div class="tab-pane active" id="tab_stat_tags">'
 		//alert(tags)
 	htm += '<h3>最新的10个tag</h3>'
 
@@ -415,6 +429,7 @@ function merge_stat_all(response, status, xhr)
 	}
 	htm += '</pre>'
 
+	htm += '</div>'
 		/*
 	htm += '<h3>没有合并入master的release</h3>'
 	htm += '<hr/>'
@@ -446,6 +461,8 @@ function merge_stat_all(response, status, xhr)
 	}
 		*/
 
+	htm += '<div class="tab-pane" id="tab_stat_master_develop">'
+
 	htm += '<h3>没有合并入master的develop</h3>'
 	htm += '<hr/>'
 	for (var e in nomerge_master_dev_stat) {
@@ -470,6 +487,26 @@ function merge_stat_all(response, status, xhr)
 		htm += '</pre>'
 
 	}
+
+	htm += '<h3>develop已经并入的开发分支</h3>'
+	htm += '<hr/>'
+	for (var e in cmp_dev) {
+		var cb = cmp_dev[e]
+		htm += base_br_show(e, heads, hash2br)
+		htm += '<pre>'
+		for (var i = 0; i < cb.length; i++) {
+			htm += cmp_br_show(cb[i], heads, hash2br) + '\n'
+			//htm += branch_show(cb[i]) + ' ' + heads[cb[i]] + '\n'
+		}
+		htm += '</pre>'
+	}
+
+
+
+	htm += '</div>'
+
+
+	htm += '<div class="tab-pane" id="tab_stat_hotfix">'
 
 
 	htm += '<h3>master和hotfix/*合并统计</h3>'
@@ -530,24 +567,9 @@ function merge_stat_all(response, status, xhr)
 	}
 
 
+	htm += '</div>'
 
-
-
-
-	htm += '<h3>develop已经并入的开发分支</h3>'
-	htm += '<hr/>'
-	for (var e in cmp_dev) {
-		var cb = cmp_dev[e]
-		htm += base_br_show(e, heads, hash2br)
-		htm += '<pre>'
-		for (var i = 0; i < cb.length; i++) {
-			htm += cmp_br_show(cb[i], heads, hash2br) + '\n'
-			//htm += branch_show(cb[i]) + ' ' + heads[cb[i]] + '\n'
-		}
-		htm += '</pre>'
-	}
-
-
+	htm += '<div class="tab-pane" id="tab_stat_qa">'
 	htm += '<h3>develop和qa/*对比统计</h3>'
 	htm += '<hr/>'
 	for (var e in nomerge_develop_qa_stat) {
@@ -579,6 +601,7 @@ function merge_stat_all(response, status, xhr)
 
 
 
+
 	htm += '<h3>qa/*已经并入的开发分支</h3>'
 	htm += '<hr/>'
 	for (var e in cmp_qa) {
@@ -592,6 +615,9 @@ function merge_stat_all(response, status, xhr)
 		htm += '</pre>'
 	}
 
+	htm += '</div>'
+
+	htm += '<div class="tab-pane" id="tab_stat_del">'
 
 	htm += '<h3>可能已经需要删除的分支统计</h3>'
 	htm += '<hr/>'
@@ -615,6 +641,10 @@ function merge_stat_all(response, status, xhr)
 
 
 
+	htm += '</div>'
+
+	htm += '<div class="tab-pane" id="tab_stat_dev">'
+
 
 	htm += '<h3>当前开发分支合并状态</h3>'
 	htm += '<hr/>'
@@ -636,8 +666,9 @@ function merge_stat_all(response, status, xhr)
 	}
 
 
+	htm += '</div>'
 
-
+	htm += '</div>'
 
 
 	//===========================
