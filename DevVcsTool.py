@@ -182,7 +182,7 @@ class DevVcsTool:
 
 
     def recent_tag(self, num):
-        cmd = 'git tag -l | head -%s' % (num, )
+        cmd = 'git tag -l | tail -%s' % (num, )
         tags = self.do_cmd_except(cmd)
         tags = tags.splitlines()
         tags = [e.strip() for e in tags]
