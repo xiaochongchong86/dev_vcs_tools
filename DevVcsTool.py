@@ -41,7 +41,8 @@ class DevVcsTool:
         if res[0] != 0:
             raise ShellCmdError(cmd, res[0], res[1])
         #print res[1]
-        return res[1]
+        #return res[1]
+        return unicode(res[1], 'utf-8', errors='ignore')
 
     def get_heads(self):
         return self.heads

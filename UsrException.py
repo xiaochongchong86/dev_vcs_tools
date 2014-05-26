@@ -38,7 +38,7 @@ class OtherError(Exception):
 
 
 
-def traceback_wrapper(fun, *args, **kwds):
+def traceback_wrapper_in(fun, *args, **kwds):
     try:
         res = fun(*args, **kwds)
         res = {'code': 0, 'res': res}
@@ -56,4 +56,15 @@ def traceback_wrapper(fun, *args, **kwds):
         traceback.print_exc()
         res = { 'code': 4, 'err': traceback.format_exc() }
 
-    return json.dumps(res)
+    #print res
+    return json.dumps(res, skipkeys=True)
+
+
+def traceback_wrapper(fun, *args, **kwds):
+    try:
+        return traceback_wrapper_in(fun, *args, **kwds)
+
+    except:
+        traceback.print_exc()
+        res = { 'code': 4, 'err': traceback.format_exc() }
+        return json.dumps(res)
