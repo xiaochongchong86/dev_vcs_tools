@@ -14,8 +14,20 @@ function login_label()
 
 }
 
+function gitweb_port_cache()
+{
+	global_git_web_port = $.ajax({url:"gitweb/port", async:false})
+	global_git_web_port = global_git_web_port.responseText
+	global_git_web_port = eval('(' + global_git_web_port + ')')
+	global_git_web_port = global_git_web_port[0]
+
+
+}
+
 function readydo_info()
 {
+
+    gitweb_port_cache()
 	login_label()
 	init_show()
 }
@@ -28,6 +40,7 @@ function readydo_index()
 
 function readydo_ope()
 {
+	gitweb_port_cache()
 	//init_show()
 	login_label()
 	button_click()
@@ -312,10 +325,13 @@ function gitweb_commit(ci_info, hash2br)
 {
 	// http://172.16.10.48:8598/?p=.git;a=commit;h=ac23adab42ab40dd0afaa89f426115b85991c701
 	// very ugly.....
-	port = $.ajax({url:"gitweb/port", async:false})
+	/*
+	var port = $.ajax({url:"gitweb/port", async:false})
 	port = port.responseText
-	var port = eval('(' + port + ')')
+	port = eval('(' + port + ')')
 	port = port[0]
+	*/
+	var port = global_git_web_port
 	htm = ''
 
 	ci_id = ci_info[0]
