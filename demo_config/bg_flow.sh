@@ -1,4 +1,4 @@
-
+export LANG=en_US.utf8
 
 prj_sp_edaijia=sp_edaijia
 prj_www_edaijia=www_edaijia
