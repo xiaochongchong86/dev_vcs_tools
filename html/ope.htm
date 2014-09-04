@@ -69,6 +69,15 @@
 <div id="div_res_qa"></div>
 
 
+<h3>创建QA专用测试(qapri/*)分支默认基于develop创建</h3>
+<p>base branch: <input id="input_base_qapri" value="develop" type="text" name="branch"></p>
+<p>qapri/<input id="input_qapri" type="text" name="branch"></p>
+<button id="btn_qapri" type="button">create</button>
+<button id="btn_del_qapri" type="button">delete</button>
+<div id="div_res_qapri"></div>
+
+
+
 </div>
 
 
@@ -97,6 +106,14 @@
 <button id="btn_check_qa" type="button">check</button>
 <button id="btn_merge_qa" type="button">merge</button>
 <div id="div_res_merge_qa"></div>
+
+
+<h3>集成开发分支到合并到测试专用分支</h3>
+<p>base branch: qapri/<input id="input_merge_qapri" type="text" name="branch"></p>
+<p>merge list(分支用逗号分隔): <input id="input_merge_list_qapri" type="text" name="branch" size="60"></p>
+<button id="btn_check_qapri" type="button">check</button>
+<button id="btn_merge_qapri" type="button">merge</button>
+<div id="div_res_merge_qapri"></div>
 
 
 <h3>集成开发分支到develop分支</h3>

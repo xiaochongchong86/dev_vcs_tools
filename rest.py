@@ -59,6 +59,10 @@ class Branch:
         elif tp == 'qa':
             privilege_check(auth.PRG_BR_CR_QA)
 
+        elif tp == 'qapri':
+            privilege_check(auth.PRG_BR_CR_QAPRI)
+
+
         else:
             privilege_check(auth.PRG_BR_CR_ROOT)
 
@@ -83,6 +87,9 @@ class Branch:
 
         elif tp == 'qa':
             res = DevVcsTool.delete_solid_branch('qa/'+br)
+
+        elif tp == 'qapri':
+            res = DevVcsTool.delete_solid_branch('qapri/'+br)
 
         elif tp == 'cqa':
             res = DevVcsTool.delete_solid_branch('conflict/qa/'+br)
@@ -120,6 +127,9 @@ class Branch:
         elif tp == 'qa':
             res = DevVcsTool.create_solid_branch(base_br, 'qa/'+br)
 
+        elif tp == 'qapri':
+            res = DevVcsTool.create_solid_branch(base_br, 'qapri/'+br)
+
         elif tp == 'cqa':
             res = DevVcsTool.create_solid_branch(base_br, 'conflict/qa/'+br)
 
@@ -146,6 +156,9 @@ class MergeBranch:
 
         if tp == 'qa':
             privilege_check(auth.PRG_BR_CR_GUEST, auth.PRG_BR_MG_QA)
+
+        elif tp == 'qapri':
+            privilege_check(auth.PRG_BR_CR_GUEST, auth.PRG_BR_MG_QAPRI)
 
         elif tp == 'dv':
             privilege_check(auth.PRG_BR_CR_GUEST, auth.PRG_BR_MG_DEVELOP)
@@ -182,6 +195,9 @@ class MergeBranch:
 
         elif tp == 'qa':
             res = DevVcsTool.merge_branch('qa/'+base_br, merge_list, merge_info, '')
+
+        elif tp == 'qapri':
+            res = DevVcsTool.merge_branch('qapri/'+base_br, merge_list, merge_info, '')
 
 
         elif tp == 'hf':
@@ -226,6 +242,10 @@ class MergeCheck:
 
         elif tp == 'qa':
             res = DevVcsTool.check_merge_branch('qa/'+base_br, merge_list)
+
+        elif tp == 'qapri':
+            res = DevVcsTool.check_merge_branch('qapri/'+base_br, merge_list)
+
 
         elif tp == 'hf':
             merge_br = 'hotfix/'+usr_data['merge_list']

@@ -366,6 +366,7 @@ def all_merge_stat():
     dvt = DevVcsTool('origin')
 
     res_qa = dvt.cmp_pref_branch_pref_branch('qa/*', 'dev/*', '')
+    res_qapri = dvt.cmp_pref_branch_pref_branch('qapri/*', 'dev/*', '')
     res_develop = dvt.cmp_pref_branch_pref_branch('develop', 'dev/*', '')
     res_release = dvt.cmp_pref_branch_pref_branch('release/*', 'dev/*', '')
     res_master = dvt.cmp_pref_branch_pref_branch('master', 'dev/*', '')
@@ -390,6 +391,9 @@ def all_merge_stat():
     dev_stat = {}
     # /dev/* 和 /qa/* 对比
     cmp_qa = collect_stat(dev_stat, res_qa)
+    # /dev/* 和 /qapri/* 对比
+    cmp_qapri = collect_stat(dev_stat, res_qapri)
+
     # /dev/* 和 /develop 对比
     cmp_dev = collect_stat(dev_stat, res_develop)
 
@@ -434,6 +438,7 @@ def all_merge_stat():
     #print nomerge_dep_stat
     return  {'dev_stat': dev_stat,
              'cmp_qa': cmp_qa,
+             'cmp_qapri': cmp_qapri,
              'cmp_dev': cmp_dev,
              'nomerge_dev_stat': nomerge_dev_stat,
              'nomerge_dep_stat': nomerge_dep_stat,

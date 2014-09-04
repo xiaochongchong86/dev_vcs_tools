@@ -26,6 +26,9 @@ PRG_BR_CR_USER = 1
 PRG_BR_CR_ANY = 2
 # qa/*分支创建权限
 PRG_BR_CR_QA = 3
+# qapri/*分支创建权限
+PRG_BR_CR_QAPRI = 4
+
 # admin
 PRG_BR_CR_ROOT = 100
 
@@ -34,10 +37,14 @@ PRG_BR_CR_ROOT = 100
 PRG_BR_MG_GUEST = 0
 # qa/* 分支合并权限
 PRG_BR_MG_QA = 1
+
+# qapri/* 分支合并权限
+PRG_BR_MG_QAPRI = 2
+
 # develop 分支合并权限
-PRG_BR_MG_DEVELOP = 2
+PRG_BR_MG_DEVELOP = 3
 # hotfix, master 合并，打tag权限
-PRG_BR_MG_MASTER = 3
+PRG_BR_MG_MASTER = 4
 # admin
 PRG_BR_MG_ROOT = 100
 

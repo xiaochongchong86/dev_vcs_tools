@@ -59,6 +59,7 @@ function button_click()
 
 	$("#btn_dv").click(create_br_closure('dv'))
 	$("#btn_qa").click(create_br_closure('qa'))
+	$("#btn_qapri").click(create_br_closure('qapri'))
 	$("#btn_cqa").click(create_br_closure('cqa'))
 	$("#btn_hf").click(create_br_closure('hf'))
 	$("#btn_rl").click(create_br_closure('rl'))
@@ -67,11 +68,13 @@ function button_click()
 
 	$("#btn_del_dv").click(delete_br_closure('dv'))
 	$("#btn_del_qa").click(delete_br_closure('qa'))
+	$("#btn_del_qapri").click(delete_br_closure('qapri'))
 	$("#btn_del_hf").click(delete_br_closure('hf'))
 	$("#btn_del_cqa").click(delete_br_closure('cqa'))
 
 
 	$("#btn_merge_qa").click(merge_br_closure('qa'))
+	$("#btn_merge_qapri").click(merge_br_closure('qapri'))
 	$("#btn_merge_dv").click(merge_br_closure('dv'));
 	$("#btn_merge_ms").click(merge_br_closure('ms'));
 	$("#btn_merge_ms2").click(merge_br_closure('ms2'));
@@ -80,6 +83,7 @@ function button_click()
 
 
 	$("#btn_check_qa").click(check_merge_br_closure('qa'))
+	$("#btn_check_qapri").click(check_merge_br_closure('qapri'))
 	$("#btn_check_dv").click(check_merge_br_closure('dv'));
 	$("#btn_check_ms").click(check_merge_br_closure('ms'));
 	$("#btn_check_ms2").click(check_merge_br_closure('ms2'));
@@ -406,6 +410,7 @@ function merge_stat_all(response, status, xhr)
 
     var dev_stat = obj.dev_stat
     var cmp_qa = obj.cmp_qa
+    var cmp_qapri = obj.cmp_qapri
     var cmp_dev = obj.cmp_dev
     var nomerge_dev_stat = obj.nomerge_dev_stat
     var nomerge_dep_stat = obj.nomerge_dep_stat
@@ -632,6 +637,21 @@ function merge_stat_all(response, status, xhr)
 		}
 		htm += '</pre>'
 	}
+
+	htm += '<h3>qapri/*已经并入的开发分支</h3>'
+	htm += '<hr/>'
+	for (var e in cmp_qapri) {
+		var cb = cmp_qapri[e]
+		htm += base_br_show(e, heads, hash2br)
+		htm += '<pre>'
+		cb.sort()
+		for (var i = 0; i < cb.length; i++) {
+			htm += cmp_br_show(cb[i], heads, hash2br) + '\n'
+			//htm += branch_show(cb[i]) + ' ' + heads[cb[i]] + '\n'
+		}
+		htm += '</pre>'
+	}
+
 
 	htm += '</div>'
 
