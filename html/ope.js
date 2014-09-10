@@ -89,7 +89,51 @@ function button_click()
 	$("#btn_check_ms2").click(check_merge_br_closure('ms2'));
 	$("#btn_check_hf").click(check_merge_br_closure('hf'));
 
+	$("#btn_do_stage").click(check_state_closure());
+
 }
+
+function check_state_closure()
+{
+
+	var div = '#div_res_stage'
+
+	return function()
+		{
+			$(div).html('<pre>loading...</pre>')
+
+			uri = "git/stage"
+			$.post(
+				   uri,
+	               {},
+				   check_stage_cb_closure(div)
+				   )
+
+		}
+
+}
+function check_stage_cb_closure(user_data)
+{
+	return function(data, status)
+		{
+
+			var obj = eval('(' + data + ')')
+			var htm = ''
+			if (obj.code != 0) {
+				htm = err_show(obj)
+			} else {
+				htm = '<pre>'
+				htm += obj.res
+
+				htm += '</pre>'
+
+			}
+
+			$(user_data).html(htm)
+
+		}
+}
+
 
 function check_merge_br_closure(tp)
 {

@@ -4,6 +4,7 @@
 import web
 import sys, os
 import json
+import commands
 import traceback
 import DevVcsTool
 import auth
@@ -13,6 +14,7 @@ from UsrException import *
 urls = (
     '/git', 'test',
     '/git/login', 'Login',
+    '/git/stage', 'DoStage',
     '/git/pricheck', 'PriCheck',
     '/git/stat/merge', 'MergeStat',
     '/git/branch/(.*)', 'Branch',
@@ -149,6 +151,21 @@ class Branch:
             raise OtherError('err type: '+tp)
 
         return res
+
+class DoStage:
+    def POST(self):
+        return traceback_wrapper(self.do_POST)
+
+
+    def do_POST(self):
+        privilege_check(auth.PRG_BR_CR_GUEST, auth.PRG_BR_MG_DEVELOP)
+        cmd = 'ssh -T jump "sudo sh /root/scripts/stage_pulish.sh"'
+        res = commands.getstatusoutput(cmd)
+        print res
+        if res[0] != 0:
+            raise ShellCmdError(cmd, res[0], res[1])
+
+        return unicode(res[1], 'utf-8', errors='ignore')
 
 
 class MergeBranch:
