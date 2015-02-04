@@ -103,9 +103,10 @@ function check_state_closure()
 			$(div).html('<pre>loading...</pre>')
 
 			uri = "git/stage"
+			var par = window.location.pathname
 			$.post(
 				   uri,
-	               {},
+	               {path: par},
 				   check_stage_cb_closure(div)
 				   )
 
