@@ -15,6 +15,8 @@ urls = (
     '/git', 'test',
     '/git/login', 'Login',
     '/git/stage', 'DoStage',
+    '/git/online', 'Doonline',
+    '/git/test', 'Dotest',
     '/git/pricheck', 'PriCheck',
     '/git/stat/merge', 'MergeStat',
     '/git/branch/(.*)', 'Branch',
@@ -152,20 +154,84 @@ class Branch:
 
         return res
 
+
+
+
+class Dotest:
+    def POST(self):
+        return traceback_wrapper(self.do_POST)
+
+
+    def do_POST(self):
+        usr_data = dict(web.input())
+        path = usr_data['path']
+        #privilege_check(auth.PRG_BR_CR_GUEST, auth.PRG_BR_MG_DEVELOP)
+	privilege_check(auth.PRG_BR_CR_QA)
+	#cmd = 'ssh -T suncongcong@board01.edaijia-staff.cn "sudo sh /root/scripts/h5stage_pulish.sh"'
+	arr = []
+	arr = path.split('/')
+	#cmd = 'ssh -T suncongcong@board01.edaijia-staff.cn "echo %s_stage.sh"' % arr[1]
+	cmd = 'ssh -T suncongcong@board01.edaijia-staff.cn "sudo  /devops/%s_test.sh"' % arr[1]
+	#cmd = "echo tp  "
+        res = commands.getstatusoutput(cmd)
+        if res[0] != 0:
+            raise ShellCmdError(cmd, res[0], res[1])
+
+        return unicode(res[1], 'utf-8', errors='ignore')
+
+
+
+
+
 class DoStage:
     def POST(self):
         return traceback_wrapper(self.do_POST)
 
 
     def do_POST(self):
-        privilege_check(auth.PRG_BR_CR_GUEST, auth.PRG_BR_MG_DEVELOP)
-        cmd = 'ssh -T jump "sudo sh /root/scripts/stage_pulish.sh"'
+        usr_data = dict(web.input())
+        path = usr_data['path']
+        #privilege_check(auth.PRG_BR_CR_GUEST, auth.PRG_BR_MG_DEVELOP)
+	privilege_check(auth.PRG_BR_CR_QA)
+	#cmd = 'ssh -T suncongcong@board01.edaijia-staff.cn "sudo sh /root/scripts/h5stage_pulish.sh"'
+	arr = []
+	arr = path.split('/')
+	#cmd = 'ssh -T suncongcong@board01.edaijia-staff.cn "echo %s_stage.sh"' % arr[1]
+	cmd = 'ssh -T suncongcong@board01.edaijia-staff.cn "sudo  /devops/%s_stage.sh"' % arr[1]
+	#cmd = "echo tp  "
         res = commands.getstatusoutput(cmd)
-        print res
         if res[0] != 0:
             raise ShellCmdError(cmd, res[0], res[1])
 
         return unicode(res[1], 'utf-8', errors='ignore')
+
+
+class Doonline:
+    def POST(self):
+	privilege_check(auth.PRG_BR_CR_QA)
+        return traceback_wrapper(self.do_POST)
+
+
+    def do_POST(self):
+        usr_data = dict(web.input())
+        path = usr_data['path']
+        #privilege_check(auth.PRG_BR_CR_GUEST, auth.PRG_BR_MG_DEVELOP)
+	privilege_check(auth.PRG_BR_CR_QA)
+	#cmd = 'ssh -T suncongcong@board01.edaijia-staff.cn "sudo sh /root/scripts/h5stage_pulish.sh"'
+	arr = []
+	arr = path.split('/')
+	#cmd = 'ssh -T suncongcong@board01.edaijia-staff.cn "echo %s_stage.sh"' % arr[1]
+	cmd = 'ssh -T suncongcong@board01.edaijia-staff.cn "sudo  /devops/%s_online.sh"' % arr[1]
+	#cmd = "echo tp  "
+        res = commands.getstatusoutput(cmd)
+        if res[0] != 0:
+            raise ShellCmdError(cmd, res[0], res[1])
+
+        return unicode(res[1], 'utf-8', errors='ignore')
+
+
+
+
 
 
 class MergeBranch:

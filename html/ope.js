@@ -103,7 +103,7 @@ function check_state_closure()
 			$(div).html('<pre>loading...</pre>')
 
 			uri = "git/stage"
-			var par = window.location.pathname
+			var par = 12345
 			$.post(
 				   uri,
 	               {path: par},
@@ -363,8 +363,8 @@ function branch_show(br)
 
 function gitweb_branch(branch, port)
 {
-	// http://172.16.10.48:8599/?p=.git;a=shortlog;h=refs/remotes/origin/dev/yangsong/scron
-	href = "http://172.16.10.48:"+port+"/?p=.git;a=shortlog;h=refs/remotes/origin/"+branch
+	// http://172.16.170.35:8599/?p=.git;a=shortlog;h=refs/remotes/origin/dev/yangsong/scron
+	href = "http://172.16.170.35:"+port+"/?p=.git;a=shortlog;h=refs/remotes/origin/"+branch
 	ac = '<span class="remote"><a href="' + href  + '"><font color="red">' + branch + '</font></a></span>'
 
 	return ac
@@ -372,7 +372,7 @@ function gitweb_branch(branch, port)
 
 function gitweb_commit(ci_info, hash2br)
 {
-	// http://172.16.10.48:8598/?p=.git;a=commit;h=ac23adab42ab40dd0afaa89f426115b85991c701
+	// http://172.16.170.35:8598/?p=.git;a=commit;h=ac23adab42ab40dd0afaa89f426115b85991c701
 	// very ugly.....
 	/*
 	var port = $.ajax({url:"gitweb/port", async:false})
@@ -390,7 +390,7 @@ function gitweb_commit(ci_info, hash2br)
 
 	ci_show = ci_id + ' ' + ci_date + ' ' + ci_author + ' ' + ci_cm
 
-	href = "http://172.16.10.48:"+port+"/?p=.git;a=commit;h=" + ci_id
+	href = "http://172.16.170.35:"+port+"/?p=.git;a=commit;h=" + ci_id
 	ac = '<a href="' + href  + '">' + ci_show + ' ' + '</a>'
 	htm += ac
 

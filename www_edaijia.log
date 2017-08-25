@@ -1,0 +1,4 @@
+Traceback (most recent call last):
+  File "/home/shawn/dev_vcs_tools/rest.py", line 4, in <module>
+    import web
+ImportError: No module named web
